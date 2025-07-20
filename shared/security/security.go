@@ -39,6 +39,7 @@ func (sm *DefaultManager) VerifyPassword(hashedPassword, password string) error 
 	return sm.passwordHasher.VerifyPassword(hashedPassword, password)
 }
 
+// GenerateTokens 토큰 생성
 func (sm *DefaultManager) GenerateTokens(userID, username, role string) (*jwt.Token, error) {
 	return sm.tokenManager.GenerateTokens(userID, username, role)
 }
