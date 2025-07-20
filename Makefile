@@ -14,7 +14,11 @@ run:
 test:
 	@echo "Running all tests..."
 	go work sync
-	# make test-user
+	make test-security
+
+test-security:
+	@echo "Running security test..."
+	cd shared/security && go test ./...
 
 coverage:
 	@echo "Running tests with coverage..."
