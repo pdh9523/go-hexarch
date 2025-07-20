@@ -68,7 +68,7 @@ func (t *TokenManager) ValidateAccessToken(accessToken string) (*AccessTokenClai
 		return nil, errors.New("invalid access token")
 	}
 
-	if claims.TokenType != "access" {
+	if claims.TokenType != "access_token" {
 		return nil, errors.New("not an access token")
 	}
 	return claims, nil
@@ -90,7 +90,7 @@ func (t *TokenManager) ValidateRefreshToken(refreshToken string) (*RefreshTokenC
 	if !ok || !token.Valid {
 		return nil, errors.New("invalid refresh token")
 	}
-	if claims.TokenType != "refresh" {
+	if claims.TokenType != "refresh_token" {
 		return nil, errors.New("not an refresh token")
 	}
 	return claims, nil
