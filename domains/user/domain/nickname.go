@@ -30,7 +30,7 @@ func NewNickname(value string) (*Nickname, error) {
 	return &Nickname{value: value}, nil
 }
 
-func (n *Nickname) Value() string {
+func (n *Nickname) ToString() string {
 	return n.value
 }
 

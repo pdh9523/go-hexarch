@@ -30,7 +30,7 @@ func NewUsername(value string) (*Username, error) {
 	return &Username{value: value}, nil
 }
 
-func (u *Username) Value() string {
+func (u *Username) ToString() string {
 	return u.value
 }
 

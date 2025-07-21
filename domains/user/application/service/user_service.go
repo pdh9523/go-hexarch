@@ -36,7 +36,7 @@ func (s *UserService) CheckNicknameAvailability(
 		return nil, err
 	}
 
-	exists, err := s.userRepository.ExistsByNickname(ctx, nickname.Value())
+	exists, err := s.userRepository.ExistsByNickname(ctx, nickname.ToString())
 	if err != nil {
 		return nil, err
 	}
