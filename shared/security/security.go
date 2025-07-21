@@ -10,7 +10,7 @@ type Manager interface {
 	HashPassword(password string) (string, error)
 	VerifyPassword(hashedPassword, password string) error
 
-	GenerateTokens(userID, username, role string) (*jwt.Token, error)
+	GenerateTokens(username, role string) (*jwt.Token, error)
 	ValidateAccessToken(accessToken string) (*jwt.AccessTokenClaims, error)
 	ValidateRefreshToken(refreshToken string) (*jwt.RefreshTokenClaims, error)
 	RefreshTokens(refreshToken string) (*jwt.Token, error)
@@ -40,8 +40,8 @@ func (sm *DefaultManager) VerifyPassword(hashedPassword, password string) error 
 }
 
 // GenerateTokens 토큰 생성
-func (sm *DefaultManager) GenerateTokens(userID, username, role string) (*jwt.Token, error) {
-	return sm.tokenManager.GenerateTokens(userID, username, role)
+func (sm *DefaultManager) GenerateTokens(username, role string) (*jwt.Token, error) {
+	return sm.tokenManager.GenerateTokens(username, role)
 }
 
 // ValidateAccessToken 액세스 토큰 검증

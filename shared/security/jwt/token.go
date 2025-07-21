@@ -9,7 +9,7 @@ import (
 )
 
 type Manager interface {
-	GenerateTokens(userID, username, role string) (*Token, error)
+	GenerateTokens(username, role string) (*Token, error)
 	ValidateAccessToken(accessToken string) (*AccessTokenClaims, error)
 	ValidateRefreshToken(refreshToken string) (*RefreshTokenClaims, error)
 	RefreshTokens(refreshToken string) (*Token, error)
@@ -38,12 +38,12 @@ func NewTokenManager(config config.TokenConfig) *TokenManager {
 	}
 }
 
-func (t *TokenManager) GenerateTokens(userID, username, role string) (*Token, error) {
-	accessToken, err := t.generateAccessToken(userID, username, role)
+func (t *TokenManager) GenerateTokens(username, role string) (*Token, error) {
+	accessToken, err := t.generateAccessToken(username, role)
 	if err != nil {
 		return nil, err
 	}
-	refreshToken, err := t.generateRefreshToken(userID, username, role)
+	refreshToken, err := t.generateRefreshToken(username, role)
 	if err != nil {
 		return nil, err
 	}
@@ -102,21 +102,21 @@ func (t *TokenManager) RefreshTokens(refreshToken string) (*Token, error) {
 		return nil, errors.New("invalid refresh token" + err.Error())
 	}
 
-	tokens, err := t.GenerateTokens(claims.UserID, claims.Username, claims.Role)
+	tokens, err := t.GenerateTokens(claims.Username, claims.Role)
 	if err != nil {
 		return nil, err
 	}
 	return tokens, nil
 }
 
-func (t *TokenManager) generateAccessToken(userID, username, role string) (string, error) {
-	claims := NewAccessTokenClaims(userID, username, role, t.accessTokenTTL)
+func (t *TokenManager) generateAccessToken(username, role string) (string, error) {
+	claims := NewAccessTokenClaims(username, role, t.accessTokenTTL)
 	token := jwt.NewWithClaims(t.signingMethod, claims)
 	return token.SignedString(t.accessTokenSecret)
 }
 
-func (t *TokenManager) generateRefreshToken(userID, username, role string) (string, error) {
-	claims := NewRefreshTokenClaims(userID, username, role, t.refreshTokenTTL)
+func (t *TokenManager) generateRefreshToken(username, role string) (string, error) {
+	claims := NewRefreshTokenClaims(username, role, t.refreshTokenTTL)
 	token := jwt.NewWithClaims(t.signingMethod, claims)
 	return token.SignedString(t.refreshTokenSecret)
 }

@@ -8,7 +8,6 @@ import (
 
 // StandardClaims 표준 JWT 클레임
 type StandardClaims struct {
-	UserID   string `json:"user_id"`
 	Username string `json:"username"`
 	Role     string `json:"role"`
 	jwt.RegisteredClaims
@@ -27,11 +26,10 @@ type RefreshTokenClaims struct {
 }
 
 // NewAccessTokenClaims 새로운 액세스 토큰 클레임 생성
-func NewAccessTokenClaims(userID, username, role string, expiration time.Duration) *AccessTokenClaims {
+func NewAccessTokenClaims(username, role string, expiration time.Duration) *AccessTokenClaims {
 	now := time.Now()
 	return &AccessTokenClaims{
 		StandardClaims: StandardClaims{
-			UserID:   userID,
 			Username: username,
 			Role:     role,
 			RegisteredClaims: jwt.RegisteredClaims{
@@ -39,7 +37,7 @@ func NewAccessTokenClaims(userID, username, role string, expiration time.Duratio
 				ExpiresAt: jwt.NewNumericDate(now.Add(expiration)),
 				NotBefore: jwt.NewNumericDate(now),
 				Issuer:    "go-hexarch",
-				Subject:   userID,
+				Subject:   username,
 			},
 		},
 		TokenType: "access_token",
@@ -47,11 +45,10 @@ func NewAccessTokenClaims(userID, username, role string, expiration time.Duratio
 }
 
 // NewRefreshTokenClaims 새로운 리프레시 토큰 클레임 생성
-func NewRefreshTokenClaims(userID, username, role string, expiration time.Duration) *RefreshTokenClaims {
+func NewRefreshTokenClaims(username, role string, expiration time.Duration) *RefreshTokenClaims {
 	now := time.Now()
 	return &RefreshTokenClaims{
 		StandardClaims: StandardClaims{
-			UserID:   userID,
 			Username: username,
 			Role:     role,
 			RegisteredClaims: jwt.RegisteredClaims{
@@ -59,7 +56,7 @@ func NewRefreshTokenClaims(userID, username, role string, expiration time.Durati
 				ExpiresAt: jwt.NewNumericDate(now.Add(expiration)),
 				NotBefore: jwt.NewNumericDate(now),
 				Issuer:    "go-hexarch",
-				Subject:   userID,
+				Subject:   username,
 			},
 		},
 		TokenType: "refresh_token",
@@ -80,11 +77,6 @@ func (c *StandardClaims) IsValidBefore() bool {
 		return true
 	}
 	return time.Now().Before(c.NotBefore.Time)
-}
-
-// GetUserID 사용자 ID 반환
-func (c *StandardClaims) GetUserID() string {
-	return c.UserID
 }
 
 // GetUsername 사용자명 반환
