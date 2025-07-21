@@ -47,3 +47,36 @@ func (s *UserService) CheckNicknameAvailability(
 
 	return &result.CheckNicknameResult{IsAvailable: !exists}, nil
 }
+
+func (s *UserService) CreateUser(
+	ctx context.Context,
+	command command.CreateUserCommand,
+) (*result.CreateUserWithTokenResult, error) {
+	nickname, err := domain.NewNickname(command.Nickname)
+	if err != nil {
+		return nil, err
+	}
+
+	username, err := domain.NewUsername(command.Username)
+	if err != nil {
+		return nil, err
+	}
+
+	exists, err := s.userRepository.ExistsByUsername(ctx, username.ToString())
+	if err != nil {
+		return nil, err
+	} else if exists {
+		return nil, errorCode.ErrUsernameAlreadyExists
+	}
+
+	user, err := s.userRepository.Save(ctx, domain.NewUser(nickname, username))
+	if err != nil {
+		return nil, err
+	}
+
+	token, err := s.securityManager.GenerateTokens(user.Username.ToString(), user.Role.ToString())
+	if err != nil {
+		return nil, err
+	}
+	return &result.CreateUserWithTokenResult{Token: *token}, nil
+}

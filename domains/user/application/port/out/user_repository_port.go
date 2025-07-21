@@ -2,14 +2,15 @@ package out
 
 import (
 	"context"
-	"os/user"
+	"github.com/pdh9523/go-hexarch/domains/user/domain"
 )
 
 type UserRepositoryPort interface {
-	FindById(ctx context.Context, id string) (*user.User, error)
-	FindByNickname(ctx context.Context, nickname string) (*user.User, error)
+	FindByID(ctx context.Context, id string) (*domain.User, error)
+	FindByNickname(ctx context.Context, nickname string) (*domain.User, error)
 	ExistsByID(ctx context.Context, id string) (bool, error)
 	ExistsByNickname(ctx context.Context, nickname string) (bool, error)
-	Save(ctx context.Context, user *user.User) error
-	Update(ctx context.Context, user *user.User) error
+	ExistsByUsername(ctx context.Context, username string) (bool, error)
+	Save(ctx context.Context, user *domain.User) (*domain.User, error)
+	Update(ctx context.Context, user *domain.User) error
 }
