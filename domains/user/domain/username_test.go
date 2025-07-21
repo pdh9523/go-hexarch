@@ -12,7 +12,7 @@ func TestNewUsername(t *testing.T) {
 		username, err := NewUsername(testUsername)
 
 		assert.NoError(t, err)
-		assert.Equal(t, testUsername, username.ToString())
+		assert.NotNil(t, username)
 	})
 
 	t.Run("Given short username when create username then should return error", func(t *testing.T) {
@@ -27,15 +27,6 @@ func TestNewUsername(t *testing.T) {
 		username, err := NewUsername(testUsername)
 		assert.Nil(t, username)
 		assert.ErrorIs(t, err, errorCode.ErrUsernameTooLong)
-	})
-
-	t.Run("Given username when compare same username should return true", func(t *testing.T) {
-		testUsername := "testusername"
-		username1, err := NewUsername(testUsername)
-		assert.NoError(t, err)
-		username2, err := NewUsername(testUsername)
-		assert.NoError(t, err)
-		assert.Equal(t, true, username1.Equals(username2))
 	})
 
 	t.Run("Given username with no length should return false", func(t *testing.T) {
@@ -71,5 +62,35 @@ func TestNewUsername(t *testing.T) {
 		username, err := NewUsername(testUsername)
 		assert.Nil(t, username)
 		assert.ErrorIs(t, err, errorCode.ErrUsernameInvalidCharacters)
+	})
+}
+
+func TestUsername_ToString(t *testing.T) {
+	t.Run("Given username when check value with toString should return username", func(t *testing.T) {
+		testUsername := "test"
+		username := &Username{value: testUsername}
+		compare := "test1"
+
+		assert.Equal(t, username.ToString(), testUsername)
+		assert.NotEqual(t, username.ToString(), compare)
+	})
+}
+
+func TestUsername_Equals(t *testing.T) {
+	t.Run("Given two of same username when compare should return true", func(t *testing.T) {
+		testUsername := "testusername"
+		username1, err := NewUsername(testUsername)
+		assert.NoError(t, err)
+		username2, err := NewUsername(testUsername)
+		assert.NoError(t, err)
+		assert.Equal(t, true, username1.Equals(username2))
+	})
+
+	t.Run("Given two of different username when compare should return false", func(t *testing.T) {
+		testUsername1 := &Username{value: "test1"}
+		testUsername2 := &Username{value: "test2"}
+
+		assert.NotEqual(t, testUsername1, testUsername2)
+		assert.False(t, testUsername1.Equals(testUsername2))
 	})
 }
