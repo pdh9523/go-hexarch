@@ -3,6 +3,7 @@ package domain
 import (
 	"github.com/pdh9523/go-hexarch/domains/user/domain/errorCode"
 	"regexp"
+	"unicode/utf8"
 )
 
 type Nickname struct {
@@ -17,13 +18,13 @@ const (
 var nicknameRegex = regexp.MustCompile(`^[a-zA-Z가-힣0-9]+$`)
 
 func NewNickname(value string) (*Nickname, error) {
-	if length := len(value); length > MaxNicknameLength {
+	if length := utf8.RuneCountInString(value); length > MaxNicknameLength {
 		return nil, errorCode.ErrNicknameTooLong
 	} else if length < MinNicknameLength {
 		return nil, errorCode.ErrNicknameTooShort
 	}
 
-	if nicknameRegex.MatchString(value) {
+	if !nicknameRegex.MatchString(value) {
 		return nil, errorCode.ErrNicknameInvalidCharacters
 	}
 
