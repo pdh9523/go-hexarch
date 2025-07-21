@@ -1,7 +1,7 @@
 package domain
 
 import (
-	"errors"
+	"github.com/pdh9523/go-hexarch/domains/user/domain/errorCode"
 	"regexp"
 )
 
@@ -16,21 +16,15 @@ const (
 
 var nicknameRegex = regexp.MustCompile(`^[a-zA-Z가-힣0-9]+$`)
 
-var (
-	ErrNicknameTooShort          = errors.New("nickname too short")
-	ErrNicknameTooLong           = errors.New("nickname too long")
-	ErrNicknameInvalidCharacters = errors.New("nickname contains invalid characters")
-)
-
 func NewNickname(value string) (*Nickname, error) {
 	if length := len(value); length > MaxNicknameLength {
-		return nil, ErrNicknameTooLong
+		return nil, errorCode.ErrNicknameTooLong
 	} else if length < MinNicknameLength {
-		return nil, ErrNicknameTooShort
+		return nil, errorCode.ErrNicknameTooShort
 	}
 
 	if nicknameRegex.MatchString(value) {
-		return nil, ErrNicknameInvalidCharacters
+		return nil, errorCode.ErrNicknameInvalidCharacters
 	}
 
 	return &Nickname{value: value}, nil
