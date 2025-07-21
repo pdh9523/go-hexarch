@@ -30,15 +30,15 @@ func NewNickname(value string) (*Nickname, error) {
 	return &Nickname{value: value}, nil
 }
 
-func (n Nickname) Value() string {
+func (n *Nickname) Value() string {
 	return n.value
 }
 
-func (n Nickname) IsEmpty() bool {
+func (n *Nickname) IsEmpty() bool {
 	return n.value == ""
 }
 
-func (n Nickname) Equals(o *Nickname) bool {
+func (n *Nickname) Equals(o *Nickname) bool {
 	if o == nil {
 		return false
 	}
