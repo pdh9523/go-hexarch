@@ -3,10 +3,11 @@ package domain
 import (
 	"errors"
 	"regexp"
-	"strings"
 )
 
-type Nickname string
+type Nickname struct {
+	value string
+}
 
 const (
 	MinNicknameLength = 2
@@ -27,13 +28,16 @@ func NewNickname(value string) (Nickname, error) {
 }
 
 func (n Nickname) Value() string {
-	return string(n)
+	return n.value
 }
 
 func (n Nickname) IsEmpty() bool {
-	return n == ""
+	return n.value == ""
 }
 
-func (n Nickname) Equals(o Nickname) bool {
-	return n == o
+func (n Nickname) Equals(o *Nickname) bool {
+	if o == nil {
+		return false
+	}
+	return n.value == o.value
 }

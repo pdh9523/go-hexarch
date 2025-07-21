@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	usecase "github.com/pdh9523/go-hexarch/domains/user/application/port/in"
+	"github.com/pdh9523/go-hexarch/domains/user/application/port/in/command"
 	"github.com/pdh9523/go-hexarch/domains/user/application/port/in/query"
 	port "github.com/pdh9523/go-hexarch/domains/user/application/port/out"
 	"github.com/pdh9523/go-hexarch/domains/user/domain"
@@ -45,14 +46,14 @@ func (s *UserService) CheckNicknameAvailability(
 
 	if exists {
 		return &result.CheckNicknameResult{
-			Nickname: nickname.Value(),
+			Nickname: query.Nickname,
 			Status:   result.NicknameDuplicated,
 			Reason:   "nickname already exists",
 		}, nil
 	}
 
 	return &result.CheckNicknameResult{
-		Nickname: nickname.Value(),
+		Nickname: query.Nickname,
 		Status:   result.NicknameAvailable,
 		Reason:   "",
 	}, nil

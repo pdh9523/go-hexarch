@@ -7,6 +7,6 @@ import (
 
 type User struct {
 	ID       string
-	Nickname Nickname
+	Nickname *Nickname
 	Role     Role
 }
