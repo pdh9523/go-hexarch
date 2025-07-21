@@ -22,9 +22,18 @@ var (
 	ErrNicknameInvalidCharacters = errors.New("nickname contains invalid characters")
 )
 
-func NewNickname(value string) (Nickname, error) {
-	trimmedNickname := strings.TrimSpace(value)
-	return Nickname(trimmedNickname), nil
+func NewNickname(value string) (*Nickname, error) {
+	if length := len(value); length > MaxNicknameLength {
+		return nil, ErrNicknameTooLong
+	} else if length < MinNicknameLength {
+		return nil, ErrNicknameTooShort
+	}
+
+	if nicknameRegex.MatchString(value) {
+		return nil, ErrNicknameInvalidCharacters
+	}
+
+	return &Nickname{value: value}, nil
 }
 
 func (n Nickname) Value() string {
