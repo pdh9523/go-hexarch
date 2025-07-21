@@ -34,10 +34,6 @@ func (u *Username) ToString() string {
 	return u.value
 }
 
-func (u *Username) IsEmpty() bool {
-	return u.value == ""
-}
-
 func (u *Username) Equals(o *Username) bool {
 	if o == nil {
 		return false
