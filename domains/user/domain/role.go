@@ -6,3 +6,7 @@ const (
 	ROLE_USER  Role = "USER"
 	ROLE_ADMIN Role = "ADMIN"
 )
+
+func (r Role) ToString() string {
+	return string(r)
+}
