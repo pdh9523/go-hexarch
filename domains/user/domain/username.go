@@ -14,7 +14,7 @@ const (
 	MaxUsernameLength = 16
 )
 
-var usernameRegex = regexp.MustCompile(`^[a-zA-Z0-9]+$`)
+var usernameRegex = regexp.MustCompile(`^[a-z0-9]+$`)
 
 func NewUsername(value string) (*Username, error) {
 	if length := len(value); length > MaxUsernameLength {
