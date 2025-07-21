@@ -16,12 +16,11 @@ func TestJWTTokenManager_GenerateTokens(t *testing.T) {
 			RefreshTokenTTL:    24 * time.Hour,
 		}
 		tm := NewTokenManager(conf)
-		userID := "user123"
 		username := "testuser"
 		role := "user"
 
 		// When
-		token, err := tm.GenerateTokens(userID, username, role)
+		token, err := tm.GenerateTokens(username, role)
 
 		// Then
 		if err != nil {
@@ -43,10 +42,9 @@ func TestJWTTokenManager_ValidateTokens(t *testing.T) {
 			RefreshTokenTTL:    24 * time.Hour,
 		}
 		tm := NewTokenManager(conf)
-		userID := "user123"
 		username := "testuser"
 		role := "user"
-		token, _ := tm.GenerateTokens(userID, username, role)
+		token, _ := tm.GenerateTokens(username, role)
 
 		// When
 		accessClaims, err := tm.ValidateAccessToken(token.AccessToken)
@@ -54,9 +52,6 @@ func TestJWTTokenManager_ValidateTokens(t *testing.T) {
 		// Then
 		if err != nil {
 			t.Fatalf("Failed to validate access token: %v", err)
-		}
-		if accessClaims.UserID != userID {
-			t.Errorf("Expected user ID %s, got %s", userID, accessClaims.UserID)
 		}
 		if accessClaims.Username != username {
 			t.Errorf("Expected username %s, got %s", username, accessClaims.Username)
@@ -78,10 +73,9 @@ func TestJWTTokenManager_ValidateTokens(t *testing.T) {
 			RefreshTokenTTL:    24 * time.Hour,
 		}
 		tm := NewTokenManager(conf)
-		userID := "user123"
 		username := "testuser"
 		role := "user"
-		token, _ := tm.GenerateTokens(userID, username, role)
+		token, _ := tm.GenerateTokens(username, role)
 
 		// When
 		refreshClaims, err := tm.ValidateRefreshToken(token.RefreshToken)
@@ -90,8 +84,11 @@ func TestJWTTokenManager_ValidateTokens(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Failed to validate refresh token: %v", err)
 		}
-		if refreshClaims.UserID != userID {
-			t.Errorf("Expected user ID %s, got %s", userID, refreshClaims.UserID)
+		if refreshClaims.Username != username {
+			t.Errorf("Expected username %s, got %s", username, refreshClaims.Username)
+		}
+		if refreshClaims.Role != role {
+			t.Errorf("Expected role %s, got %s", role, refreshClaims.Role)
 		}
 		if refreshClaims.TokenType != "refresh_token" {
 			t.Errorf("Expected token type refresh, got %s", refreshClaims.TokenType)
@@ -109,10 +106,9 @@ func TestJWTTokenManager_RefreshTokens(t *testing.T) {
 			RefreshTokenTTL:    24 * time.Hour,
 		}
 		tm := NewTokenManager(conf)
-		userID := "user123"
 		username := "testuser"
 		role := "user"
-		refreshToken, _ := tm.GenerateTokens(userID, username, role)
+		refreshToken, _ := tm.GenerateTokens(username, role)
 
 		// When
 		newToken, err := tm.RefreshTokens(refreshToken.RefreshToken)
@@ -135,10 +131,9 @@ func TestJWTTokenManager_RefreshTokens(t *testing.T) {
 			RefreshTokenTTL:    24 * time.Hour,
 		}
 		tm := NewTokenManager(conf)
-		userID := "user123"
 		username := "testuser"
 		role := "user"
-		token, _ := tm.GenerateTokens(userID, username, role)
+		token, _ := tm.GenerateTokens(username, role)
 
 		newToken, _ := tm.RefreshTokens(token.RefreshToken)
 
@@ -149,8 +144,8 @@ func TestJWTTokenManager_RefreshTokens(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Failed to validate new access token: %v", err)
 		}
-		if accessClaims.UserID != userID {
-			t.Errorf("Expected user ID %s, got %s", userID, accessClaims.UserID)
+		if accessClaims.Username != username {
+			t.Errorf("Expected user ID %s, got %s", username, accessClaims.Username)
 		}
 	})
 }

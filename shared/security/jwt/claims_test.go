@@ -103,25 +103,9 @@ func TestStandardClaims_IsValidBefore(t *testing.T) {
 }
 
 func TestStandardClaims_Getters(t *testing.T) {
-	t.Run("Given claims with user data When get user ID Then should return correct value", func(t *testing.T) {
-		// Given
-		claims := &StandardClaims{
-			UserID:   "user123",
-			Username: "testuser",
-			Role:     "admin",
-		}
-
-		// When
-		userID := claims.GetUserID()
-
-		// Then
-		assert.Equal(t, "user123", userID)
-	})
-
 	t.Run("Given claims with user data When get username Then should return correct value", func(t *testing.T) {
 		// Given
 		claims := &StandardClaims{
-			UserID:   "user123",
 			Username: "testuser",
 			Role:     "admin",
 		}
@@ -136,7 +120,6 @@ func TestStandardClaims_Getters(t *testing.T) {
 	t.Run("Given claims with user data When get role Then should return correct value", func(t *testing.T) {
 		// Given
 		claims := &StandardClaims{
-			UserID:   "user123",
 			Username: "testuser",
 			Role:     "admin",
 		}
@@ -152,22 +135,20 @@ func TestStandardClaims_Getters(t *testing.T) {
 func TestNewAccessTokenClaims(t *testing.T) {
 	t.Run("Given user info and expiration When create access token claims Then should return valid claims", func(t *testing.T) {
 		// Given
-		userID := "user123"
 		username := "testuser"
 		role := "admin"
 		expiration := time.Hour
 
 		// When
-		claims := NewAccessTokenClaims(userID, username, role, expiration)
+		claims := NewAccessTokenClaims(username, role, expiration)
 
 		// Then
 		assert.NotNil(t, claims)
-		assert.Equal(t, userID, claims.UserID)
 		assert.Equal(t, username, claims.Username)
 		assert.Equal(t, role, claims.Role)
 		assert.Equal(t, "access_token", claims.TokenType)
 		assert.Equal(t, "go-hexarch", claims.Issuer)
-		assert.Equal(t, userID, claims.Subject)
+		assert.Equal(t, username, claims.Subject)
 		assert.NotNil(t, claims.IssuedAt)
 		assert.NotNil(t, claims.ExpiresAt)
 		assert.NotNil(t, claims.NotBefore)
@@ -182,22 +163,20 @@ func TestNewAccessTokenClaims(t *testing.T) {
 func TestNewRefreshTokenClaims(t *testing.T) {
 	t.Run("Given user info and expiration When create refresh token claims Then should return valid claims", func(t *testing.T) {
 		// Given
-		userID := "user123"
 		username := "testuser"
 		role := "admin"
 		expiration := 24 * time.Hour
 
 		// When
-		claims := NewRefreshTokenClaims(userID, username, role, expiration)
+		claims := NewRefreshTokenClaims(username, role, expiration)
 
 		// Then
 		assert.NotNil(t, claims)
-		assert.Equal(t, userID, claims.UserID)
 		assert.Equal(t, username, claims.Username)
 		assert.Equal(t, role, claims.Role)
 		assert.Equal(t, "refresh_token", claims.TokenType)
 		assert.Equal(t, "go-hexarch", claims.Issuer)
-		assert.Equal(t, userID, claims.Subject)
+		assert.Equal(t, username, claims.Subject)
 		assert.NotNil(t, claims.IssuedAt)
 		assert.NotNil(t, claims.ExpiresAt)
 		assert.NotNil(t, claims.NotBefore)
