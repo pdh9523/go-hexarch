@@ -1,15 +1,5 @@
 package result
 
 type CheckNicknameResult struct {
-	Nickname string
-	Status   NicknameStatus
-	Reason   string
+	IsAvailable bool
 }
-
-type NicknameStatus int
-
-const (
-	NicknameAvailable NicknameStatus = iota
-	NicknamePolicyViolated
-	NicknameDuplicated
-)

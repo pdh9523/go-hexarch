@@ -7,6 +7,7 @@ import (
 	"github.com/pdh9523/go-hexarch/domains/user/application/port/in/query"
 	port "github.com/pdh9523/go-hexarch/domains/user/application/port/out"
 	"github.com/pdh9523/go-hexarch/domains/user/domain"
+	"github.com/pdh9523/go-hexarch/domains/user/domain/errorCode"
 	"github.com/pdh9523/go-hexarch/domains/user/domain/result"
 	"github.com/pdh9523/go-hexarch/shared/security"
 )
@@ -32,11 +33,7 @@ func (s *UserService) CheckNicknameAvailability(
 ) (*result.CheckNicknameResult, error) {
 	nickname, err := domain.NewNickname(query.Nickname)
 	if err != nil {
-		return &result.CheckNicknameResult{
-			Nickname: query.Nickname,
-			Status:   result.NicknamePolicyViolated,
-			Reason:   err.Error(),
-		}, nil
+		return nil, err
 	}
 
 	exists, err := s.userRepository.ExistsByNickname(ctx, nickname.Value())
@@ -45,16 +42,8 @@ func (s *UserService) CheckNicknameAvailability(
 	}
 
 	if exists {
-		return &result.CheckNicknameResult{
-			Nickname: query.Nickname,
-			Status:   result.NicknameDuplicated,
-			Reason:   "nickname already exists",
-		}, nil
+		return nil, errorCode.ErrNicknameAlreadyExists
 	}
 
-	return &result.CheckNicknameResult{
-		Nickname: query.Nickname,
-		Status:   result.NicknameAvailable,
-		Reason:   "",
-	}, nil
+	return &result.CheckNicknameResult{IsAvailable: !exists}, nil
 }
