@@ -12,4 +12,7 @@ var (
 	ErrNicknameTooShort          = errors.New("nickname too short")
 	ErrNicknameTooLong           = errors.New("nickname too long")
 	ErrNicknameInvalidCharacters = errors.New("nickname invalid characters")
+
+	ErrUserNotFound      = errors.New("user not found")
+	ErrUserAlreadyExists = errors.New("user already exists")
 )
