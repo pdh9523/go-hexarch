@@ -27,7 +27,7 @@ var (
 	nicknameRegex = regexp.MustCompile(`^[a-zA-Z가-힣0-9]+$`)
 )
 
-func NewUser(nickname, username string) (*User, error) {
+func NewUser(nickname, username, hashedPassword string) (*User, error) {
 	if err := validateUsername(username); err != nil {
 		return nil, err
 	}
@@ -36,10 +36,10 @@ func NewUser(nickname, username string) (*User, error) {
 	}
 
 	return &User{
-		ID:       "",
 		Nickname: nickname,
 		Username: username,
 		Role:     ROLE_USER,
+		Password: hashedPassword,
 	}, nil
 }
 
