@@ -88,8 +88,12 @@ func (u *UserRepositoryAdapter) Update(ctx context.Context, user *domain.User) (
 }
 
 func (u *UserRepositoryAdapter) DeleteByID(ctx context.Context, id string) error {
-	if err := u.db.WithContext(ctx).Where("id =?", id).Delete(&model.User{}).Error; err != nil {
-		return err
+	result := u.db.WithContext(ctx).Where("id = ?", id).Delete(&model.User{})
+	if result.Error != nil {
+		return mapper.ToDomainError(result.Error)
+	}
+	if result.RowsAffected == 0 {
+		return mapper.ToDomainError(gorm.ErrRecordNotFound)
 	}
 	return nil
 }
