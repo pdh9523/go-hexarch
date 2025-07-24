@@ -47,9 +47,9 @@ func (s *UserService) CheckNicknameAvailability(
 	return &result.CheckNicknameResult{IsAvailable: !exists}, nil
 }
 
-func (s *UserService) CreateUser(
+func (s *UserService) SignUp(
 	ctx context.Context,
-	command command.CreateUserCommand,
+	command command.SignUpCommand,
 ) (*result.TokenResult, error) {
 	exists, err := s.userRepository.ExistsByUsername(ctx, command.Username)
 	if err != nil {

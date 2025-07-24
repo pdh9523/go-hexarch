@@ -1,6 +1,6 @@
 package command
 
-type CreateUserCommand struct {
+type SignUpCommand struct {
 	Username string
 	Password string
 	Nickname string
