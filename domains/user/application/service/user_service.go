@@ -58,7 +58,12 @@ func (s *UserService) SignUp(
 		return nil, errorCode.ErrUsernameAlreadyExists
 	}
 
-	user, err := domain.NewUser(command.Nickname, command.Username)
+	hashedPassword, err := s.securityManager.HashPassword(command.Password)
+	if err != nil {
+		return nil, err
+	}
+
+	user, err := domain.NewUser(command.Nickname, command.Username, hashedPassword)
 	if err != nil {
 		return nil, err
 	}

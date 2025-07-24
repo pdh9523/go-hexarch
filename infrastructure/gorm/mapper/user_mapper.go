@@ -16,6 +16,7 @@ func ToDomainUser(userModel *model.User) (*domain.User, error) {
 		ID:       userModel.ID,
 		Username: userModel.Username,
 		Nickname: userModel.Nickname,
+		Password: userModel.Password,
 		Role:     role,
 	}, nil
 }
@@ -26,6 +27,7 @@ func ToModelUser(userDomain *domain.User) *model.User {
 	user := &model.User{
 		Username: userDomain.Username,
 		Nickname: userDomain.Nickname,
+		Password: userDomain.Password,
 		Role:     role,
 	}
 

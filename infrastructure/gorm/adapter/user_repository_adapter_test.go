@@ -25,7 +25,7 @@ func setupTestDB(t *testing.T) *gorm.DB {
 }
 
 func createTestDomainUser(nickname, username string) *domain.User {
-	user, _ := domain.NewUser(nickname, username)
+	user, _ := domain.NewUser(nickname, username, "password")
 	return user
 }
 
