@@ -12,7 +12,7 @@ func TestNewUser(t *testing.T) {
 		nickname := "testnick"
 		username := "testuser"
 
-		user, err := NewUser(nickname, username)
+		user, err := NewUser(nickname, username, "password")
 
 		assert.NoError(t, err)
 		assert.NotNil(t, user)
@@ -25,7 +25,7 @@ func TestNewUser(t *testing.T) {
 		nickname := "testnick"
 		username := "TESTUSER"
 
-		user, err := NewUser(nickname, username)
+		user, err := NewUser(nickname, username, "password")
 
 		assert.Error(t, err)
 		assert.Nil(t, user)
@@ -36,7 +36,7 @@ func TestNewUser(t *testing.T) {
 		nickname := "test!"
 		username := "testuser"
 
-		user, err := NewUser(nickname, username)
+		user, err := NewUser(nickname, username, "password")
 
 		assert.Error(t, err)
 		assert.Nil(t, user)
@@ -56,7 +56,7 @@ func TestValidateUsername(t *testing.T) {
 		}
 
 		for _, username := range validUsernames {
-			err := validateUsername(username)
+			err := ValidateUsername(username)
 			assert.NoError(t, err, "Username should be valid: %s", username)
 		}
 	})
@@ -68,18 +68,18 @@ func TestValidateUsername(t *testing.T) {
 		}
 
 		for _, username := range shortUsernames {
-			err := validateUsername(username)
+			err := ValidateUsername(username)
 			assert.ErrorIs(t, err, errorCode.ErrUsernameTooShort, "Username should be too short: %s", username)
 		}
 	})
 
 	t.Run("Given too long username when validate then should return error", func(t *testing.T) {
 		longUsername := strings.Repeat("a", 17) // 17자
-		err := validateUsername(longUsername)
+		err := ValidateUsername(longUsername)
 		assert.ErrorIs(t, err, errorCode.ErrUsernameTooLong)
 
 		veryLongUsername := strings.Repeat("a", 40) // 40자
-		err = validateUsername(veryLongUsername)
+		err = ValidateUsername(veryLongUsername)
 		assert.ErrorIs(t, err, errorCode.ErrUsernameTooLong)
 	})
 
@@ -98,7 +98,7 @@ func TestValidateUsername(t *testing.T) {
 		}
 
 		for _, username := range invalidUsernames {
-			err := validateUsername(username)
+			err := ValidateUsername(username)
 			assert.ErrorIs(t, err, errorCode.ErrUsernameInvalidCharacters, "Username should be invalid: %s", username)
 		}
 	})

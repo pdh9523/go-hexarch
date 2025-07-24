@@ -28,10 +28,10 @@ var (
 )
 
 func NewUser(nickname, username, hashedPassword string) (*User, error) {
-	if err := validateUsername(username); err != nil {
+	if err := ValidateNickname(nickname); err != nil {
 		return nil, err
 	}
-	if err := ValidateNickname(nickname); err != nil {
+	if err := ValidateUsername(username); err != nil {
 		return nil, err
 	}
 
@@ -43,7 +43,7 @@ func NewUser(nickname, username, hashedPassword string) (*User, error) {
 	}, nil
 }
 
-func validateUsername(value string) error {
+func ValidateUsername(value string) error {
 	if length := len(value); length > MaxUsernameLength {
 		return errorCode.ErrUsernameTooLong
 	} else if length < MinUsernameLength {
