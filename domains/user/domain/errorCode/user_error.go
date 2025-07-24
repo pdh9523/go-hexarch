@@ -13,6 +13,14 @@ var (
 	ErrNicknameTooLong           = errors.New("nickname too long")
 	ErrNicknameInvalidCharacters = errors.New("nickname invalid characters")
 
+	ErrPasswordTooShort           = errors.New("password too short")
+	ErrPasswordTooLong            = errors.New("password too long")
+	ErrPasswordInvalidCharacters  = errors.New("password contains invalid characters")
+	ErrPasswordMissingUppercase   = errors.New("password must contain at least one uppercase letter")
+	ErrPasswordMissingLowercase   = errors.New("password must contain at least one lowercase letter")
+	ErrPasswordMissingNumber      = errors.New("password must contain at least one number")
+	ErrPasswordMissingSpecialChar = errors.New("password must contain at least one special character")
+
 	ErrUserNotFound      = errors.New("user not found")
 	ErrUserAlreadyExists = errors.New("user already exists")
 )
