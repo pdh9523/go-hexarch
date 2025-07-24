@@ -20,9 +20,9 @@ func NewUserRepositoryAdapter(db *gorm.DB) userPort.UserRepositoryPort {
 	}
 }
 
-func (u *UserRepositoryAdapter) FindByID(ctx context.Context, id string) (*domain.User, error) {
+func (a *UserRepositoryAdapter) FindByID(ctx context.Context, id string) (*domain.User, error) {
 	var userModel model.User
-	if err := u.db.WithContext(ctx).Where("id = ?", id).First(&userModel).Error; err != nil {
+	if err := a.db.WithContext(ctx).Where("id = ?", id).First(&userModel).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}
@@ -31,9 +31,9 @@ func (u *UserRepositoryAdapter) FindByID(ctx context.Context, id string) (*domai
 	return mapper.ToDomainUser(&userModel)
 }
 
-func (u *UserRepositoryAdapter) FindByNickname(ctx context.Context, nickname string) (*domain.User, error) {
+func (a *UserRepositoryAdapter) FindByNickname(ctx context.Context, nickname string) (*domain.User, error) {
 	var userModel model.User
-	if err := u.db.WithContext(ctx).Where("nickname = ?", nickname).First(&userModel).Error; err != nil {
+	if err := a.db.WithContext(ctx).Where("nickname = ?", nickname).First(&userModel).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}
@@ -42,41 +42,41 @@ func (u *UserRepositoryAdapter) FindByNickname(ctx context.Context, nickname str
 	return mapper.ToDomainUser(&userModel)
 }
 
-func (u *UserRepositoryAdapter) ExistsByNickname(ctx context.Context, nickname string) (bool, error) {
+func (a *UserRepositoryAdapter) ExistsByNickname(ctx context.Context, nickname string) (bool, error) {
 	var count int64
 
-	if err := u.db.WithContext(ctx).Model(&model.User{}).Where("nickname = ?", nickname).Count(&count).Error; err != nil {
+	if err := a.db.WithContext(ctx).Model(&model.User{}).Where("nickname = ?", nickname).Count(&count).Error; err != nil {
 		return false, mapper.ToDomainError(err)
 	}
 	return count > 0, nil
 }
 
-func (u *UserRepositoryAdapter) ExistsByUsername(ctx context.Context, username string) (bool, error) {
+func (a *UserRepositoryAdapter) ExistsByUsername(ctx context.Context, username string) (bool, error) {
 	var count int64
-	if err := u.db.WithContext(ctx).Model(&model.User{}).Where("username = ?", username).Count(&count).Error; err != nil {
+	if err := a.db.WithContext(ctx).Model(&model.User{}).Where("username = ?", username).Count(&count).Error; err != nil {
 		return false, mapper.ToDomainError(err)
 	}
 	return count > 0, nil
 }
 
-func (u *UserRepositoryAdapter) Save(ctx context.Context, user *domain.User) (*domain.User, error) {
+func (a *UserRepositoryAdapter) Save(ctx context.Context, user *domain.User) (*domain.User, error) {
 	userModel := mapper.ToModelUser(user)
 
-	if err := u.db.WithContext(ctx).Create(&userModel).Error; err != nil {
+	if err := a.db.WithContext(ctx).Create(&userModel).Error; err != nil {
 		return nil, err
 	}
 	return mapper.ToDomainUser(userModel)
 }
 
-func (u *UserRepositoryAdapter) Update(ctx context.Context, user *domain.User) (*domain.User, error) {
+func (a *UserRepositoryAdapter) Update(ctx context.Context, user *domain.User) (*domain.User, error) {
 	var existingUser model.User
-	if err := u.db.WithContext(ctx).First(&existingUser, "id = ?", user.ID).Error; err != nil {
+	if err := a.db.WithContext(ctx).First(&existingUser, "id = ?", user.ID).Error; err != nil {
 		return nil, mapper.ToDomainError(err)
 	}
 	existingUser.Nickname = user.Nickname.ToString()
 	existingUser.Username = user.Username.ToString()
 
-	if err := u.db.WithContext(ctx).Save(&existingUser).Error; err != nil {
+	if err := a.db.WithContext(ctx).Save(&existingUser).Error; err != nil {
 		return nil, mapper.ToDomainError(err)
 	}
 
@@ -87,8 +87,8 @@ func (u *UserRepositoryAdapter) Update(ctx context.Context, user *domain.User) (
 	return userDomain, nil
 }
 
-func (u *UserRepositoryAdapter) DeleteByID(ctx context.Context, id string) error {
-	result := u.db.WithContext(ctx).Where("id = ?", id).Delete(&model.User{})
+func (a *UserRepositoryAdapter) DeleteByID(ctx context.Context, id string) error {
+	result := a.db.WithContext(ctx).Where("id = ?", id).Delete(&model.User{})
 	if result.Error != nil {
 		return mapper.ToDomainError(result.Error)
 	}
