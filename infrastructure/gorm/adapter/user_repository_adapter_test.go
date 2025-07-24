@@ -25,13 +25,8 @@ func setupTestDB(t *testing.T) *gorm.DB {
 }
 
 func createTestDomainUser(nickname, username string) *domain.User {
-	nicknameDomain, _ := domain.NewNickname(nickname)
-	usernameDomain, _ := domain.NewUsername(username)
-	return &domain.User{
-		Nickname: nicknameDomain,
-		Username: usernameDomain,
-		Role:     domain.ROLE_USER,
-	}
+	user, _ := domain.NewUser(nickname, username)
+	return user
 }
 
 func createTestModelUser(db *gorm.DB, nickname, username string) *model.User {
@@ -135,8 +130,8 @@ func TestUserRepositoryAdapter_FindByID(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, foundUser)
 		assert.Equal(t, userModel.ID, foundUser.ID)
-		assert.Equal(t, userModel.Username, foundUser.Username.ToString())
-		assert.Equal(t, userModel.Nickname, foundUser.Nickname.ToString())
+		assert.Equal(t, userModel.Username, foundUser.Username)
+		assert.Equal(t, userModel.Nickname, foundUser.Nickname)
 	})
 
 	t.Run("Given non-existing user when find by ID then should return nil", func(t *testing.T) {
@@ -273,8 +268,7 @@ func TestUserRepositoryAdapter_Update(t *testing.T) {
 
 		userDomain1, err := mapper.ToDomainUser(userModel)
 		assert.NoError(t, err)
-		userDomain1.Username, err = domain.NewUsername("test1")
-		assert.NoError(t, err)
+		userDomain1.Username = "test1"
 
 		userDomain2, err := repo.Update(context.Background(), userDomain1)
 

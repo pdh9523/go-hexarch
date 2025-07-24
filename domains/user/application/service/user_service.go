@@ -31,12 +31,11 @@ func (s *UserService) CheckNicknameAvailability(
 	ctx context.Context,
 	query query.CheckNicknameQuery,
 ) (*result.CheckNicknameResult, error) {
-	nickname, err := domain.NewNickname(query.Nickname)
-	if err != nil {
+	if err := domain.ValidateNickname(query.Nickname); err != nil {
 		return nil, err
 	}
 
-	exists, err := s.userRepository.ExistsByNickname(ctx, nickname.ToString())
+	exists, err := s.userRepository.ExistsByNickname(ctx, query.Nickname)
 	if err != nil {
 		return nil, err
 	}
@@ -52,29 +51,24 @@ func (s *UserService) CreateUser(
 	ctx context.Context,
 	command command.CreateUserCommand,
 ) (*result.TokenResult, error) {
-	nickname, err := domain.NewNickname(command.Nickname)
-	if err != nil {
-		return nil, err
-	}
-
-	username, err := domain.NewUsername(command.Username)
-	if err != nil {
-		return nil, err
-	}
-
-	exists, err := s.userRepository.ExistsByUsername(ctx, username.ToString())
+	exists, err := s.userRepository.ExistsByUsername(ctx, command.Username)
 	if err != nil {
 		return nil, err
 	} else if exists {
 		return nil, errorCode.ErrUsernameAlreadyExists
 	}
 
-	user, err := s.userRepository.Save(ctx, domain.NewUser(nickname, username))
+	user, err := domain.NewUser(command.Nickname, command.Username)
 	if err != nil {
 		return nil, err
 	}
 
-	token, err := s.securityManager.GenerateTokens(user.Username.ToString(), user.Role.ToString())
+	savedUser, err := s.userRepository.Save(ctx, user)
+	if err != nil {
+		return nil, err
+	}
+
+	token, err := s.securityManager.GenerateTokens(savedUser.Username, savedUser.Role.ToString())
 	if err != nil {
 		return nil, err
 	}

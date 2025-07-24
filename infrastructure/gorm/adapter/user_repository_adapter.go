@@ -73,8 +73,8 @@ func (a *UserRepositoryAdapter) Update(ctx context.Context, user *domain.User) (
 	if err := a.db.WithContext(ctx).First(&existingUser, "id = ?", user.ID).Error; err != nil {
 		return nil, mapper.ToDomainError(err)
 	}
-	existingUser.Nickname = user.Nickname.ToString()
-	existingUser.Username = user.Username.ToString()
+	existingUser.Nickname = user.Nickname
+	existingUser.Username = user.Username
 
 	if err := a.db.WithContext(ctx).Save(&existingUser).Error; err != nil {
 		return nil, mapper.ToDomainError(err)

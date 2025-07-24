@@ -11,31 +11,21 @@ import (
 
 func ToDomainUser(userModel *model.User) (*domain.User, error) {
 	role := stringToRole(userModel.Role)
-	username, err := domain.NewUsername(userModel.Username)
-	if err != nil {
-		return nil, err
-	}
-	nickname, err := domain.NewNickname(userModel.Nickname)
-	if err != nil {
-		return nil, err
-	}
 
 	return &domain.User{
 		ID:       userModel.ID,
-		Username: username,
-		Nickname: nickname,
+		Username: userModel.Username,
+		Nickname: userModel.Nickname,
 		Role:     role,
 	}, nil
 }
 
 func ToModelUser(userDomain *domain.User) *model.User {
 	role := string(userDomain.Role)
-	username := userDomain.Username.ToString()
-	nickname := userDomain.Nickname.ToString()
 
 	user := &model.User{
-		Username: username,
-		Nickname: nickname,
+		Username: userDomain.Username,
+		Nickname: userDomain.Nickname,
 		Role:     role,
 	}
 
