@@ -68,12 +68,23 @@ func (u *UserRepositoryAdapter) Save(ctx context.Context, user *domain.User) (*d
 	return mapper.ToDomainUser(userModel)
 }
 
-func (u *UserRepositoryAdapter) Update(ctx context.Context, user *domain.User) error {
-	userModel := mapper.ToModelUser(user)
-	if err := u.db.WithContext(ctx).Model(&model.User{}).Where("id = ?", userModel.ID).Updates(userModel).Error; err != nil {
-		return err
+func (u *UserRepositoryAdapter) Update(ctx context.Context, user *domain.User) (*domain.User, error) {
+	var existingUser model.User
+	if err := u.db.WithContext(ctx).First(&existingUser, "id = ?", user.ID).Error; err != nil {
+		return nil, mapper.ToDomainError(err)
 	}
-	return nil
+	existingUser.Nickname = user.Nickname.ToString()
+	existingUser.Username = user.Username.ToString()
+
+	if err := u.db.WithContext(ctx).Save(&existingUser).Error; err != nil {
+		return nil, mapper.ToDomainError(err)
+	}
+
+	userDomain, err := mapper.ToDomainUser(&existingUser)
+	if err != nil {
+		return nil, err
+	}
+	return userDomain, nil
 }
 
 func (u *UserRepositoryAdapter) DeleteByID(ctx context.Context, id string) error {

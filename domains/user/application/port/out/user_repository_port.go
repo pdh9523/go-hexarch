@@ -11,6 +11,6 @@ type UserRepositoryPort interface {
 	ExistsByNickname(ctx context.Context, nickname string) (bool, error)
 	ExistsByUsername(ctx context.Context, username string) (bool, error)
 	Save(ctx context.Context, user *domain.User) (*domain.User, error)
-	Update(ctx context.Context, user *domain.User) error
+	Update(ctx context.Context, user *domain.User) (*domain.User, error)
 	DeleteByID(ctx context.Context, id string) error
 }
