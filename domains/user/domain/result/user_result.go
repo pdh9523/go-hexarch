@@ -6,6 +6,6 @@ type CheckNicknameResult struct {
 	IsAvailable bool
 }
 
-type CreateUserWithTokenResult struct {
+type TokenResult struct {
 	Token jwt.Token
 }

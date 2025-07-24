@@ -51,7 +51,7 @@ func (s *UserService) CheckNicknameAvailability(
 func (s *UserService) CreateUser(
 	ctx context.Context,
 	command command.CreateUserCommand,
-) (*result.CreateUserWithTokenResult, error) {
+) (*result.TokenResult, error) {
 	nickname, err := domain.NewNickname(command.Nickname)
 	if err != nil {
 		return nil, err
@@ -78,5 +78,5 @@ func (s *UserService) CreateUser(
 	if err != nil {
 		return nil, err
 	}
-	return &result.CreateUserWithTokenResult{Token: *token}, nil
+	return &result.TokenResult{Token: *token}, nil
 }
