@@ -8,6 +8,7 @@ import (
 type UserRepositoryPort interface {
 	FindByID(ctx context.Context, id string) (*domain.User, error)
 	FindByNickname(ctx context.Context, nickname string) (*domain.User, error)
+	FindByUsername(ctx context.Context, username string) (*domain.User, error)
 	ExistsByNickname(ctx context.Context, nickname string) (bool, error)
 	ExistsByUsername(ctx context.Context, username string) (bool, error)
 	Save(ctx context.Context, user *domain.User) (*domain.User, error)

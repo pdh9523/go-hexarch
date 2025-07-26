@@ -42,6 +42,17 @@ func (a *UserRepositoryAdapter) FindByNickname(ctx context.Context, nickname str
 	return mapper.ToDomainUser(&userModel)
 }
 
+func (a *UserRepositoryAdapter) FindByUsername(ctx context.Context, username string) (*domain.User, error) {
+	var userModel model.User
+	if err := a.db.WithContext(ctx).Where("username = ?", username).First(&userModel).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, mapper.ToDomainError(err)
+	}
+	return mapper.ToDomainUser(&userModel)
+}
+
 func (a *UserRepositoryAdapter) ExistsByNickname(ctx context.Context, nickname string) (bool, error) {
 	var count int64
 
