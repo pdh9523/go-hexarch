@@ -5,3 +5,8 @@ type SignUpCommand struct {
 	Password string
 	Nickname string
 }
+
+type SignInCommand struct {
+	Username string
+	Password string
+}

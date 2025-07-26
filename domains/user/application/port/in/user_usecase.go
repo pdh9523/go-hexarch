@@ -10,4 +10,5 @@ import (
 type UserUseCase interface {
 	CheckNicknameAvailability(cxt context.Context, query query.CheckNicknameQuery) (*result.CheckNicknameResult, error)
 	SignUp(ctx context.Context, command command.SignUpCommand) (*result.TokenResult, error)
+	SignIn(ctx context.Context, command command.SignInCommand) (*result.TokenResult, error)
 }

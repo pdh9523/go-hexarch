@@ -82,6 +82,31 @@ func (s *UserService) SignUp(
 	return result.NewTokenResult(token), nil
 }
 
+func (s *UserService) SignIn(ctx context.Context, command command.SignInCommand) (*result.TokenResult, error) {
+	if err := domain.ValidateUsername(command.Username); err != nil {
+		return nil, err
+	}
+
+	user, err := s.userRepository.FindByUsername(ctx, command.Username)
+	if err != nil {
+		return nil, err
+	}
+
+	if user == nil {
+		return nil, errorCode.ErrInvalidCredentials
+	}
+
+	if err = s.securityManager.VerifyPassword(user.Password, command.Password); err != nil {
+		return nil, errorCode.ErrInvalidCredentials
+	}
+
+	token, err := s.securityManager.GenerateTokens(user.Username, user.Role.ToString())
+	if err != nil {
+		return nil, err
+	}
+	return result.NewTokenResult(token), nil
+}
+
 func (s *UserService) isUsernameExists(ctx context.Context, username string) error {
 	exists, err := s.userRepository.ExistsByUsername(ctx, username)
 	if err != nil {
