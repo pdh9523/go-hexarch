@@ -82,7 +82,10 @@ func (s *UserService) SignUp(
 	return result.NewTokenResult(token), nil
 }
 
-func (s *UserService) SignIn(ctx context.Context, command command.SignInCommand) (*result.TokenResult, error) {
+func (s *UserService) SignIn(
+	ctx context.Context,
+	command command.SignInCommand,
+) (*result.TokenResult, error) {
 	if err := domain.ValidateUsername(command.Username); err != nil {
 		return nil, err
 	}
@@ -105,6 +108,73 @@ func (s *UserService) SignIn(ctx context.Context, command command.SignInCommand)
 		return nil, err
 	}
 	return result.NewTokenResult(token), nil
+}
+
+func (s *UserService) ChangePassword(
+	ctx context.Context,
+	command command.ChangePasswordCommand,
+) error {
+	userID, ok := ctx.Value("user_id").(string)
+	if !ok || userID == "" {
+		return error_code.ErrUnauthorized
+	}
+
+	user, err := s.userRepository.FindByID(ctx, userID)
+	if err != nil {
+		return err
+	}
+	if user == nil {
+		return error_code.ErrUserNotFound
+	}
+
+	if err = s.securityManager.VerifyPassword(user.Password, command.CurrentPassword); err != nil {
+		return error_code.ErrInvalidCredentials
+	}
+
+	if err = validatePassword(command.NewPassword); err != nil {
+		return err
+	}
+
+	hashedPassword, err := s.securityManager.HashPassword(command.NewPassword)
+	if err != nil {
+		return err
+	}
+
+	user.Password = hashedPassword
+	_, err = s.userRepository.Update(ctx, user)
+	return err
+}
+
+func (s *UserService) ChangeNickname(
+	ctx context.Context,
+	command command.ChangeNicknameCommand,
+) error {
+	userID, ok := ctx.Value("user_id").(string)
+	if !ok || userID == "" {
+		return error_code.ErrUnauthorized
+	}
+
+	if err := domain.ValidateNickname(command.Nickname); err != nil {
+		return err
+	}
+
+	user, err := s.userRepository.FindByID(ctx, userID)
+	if err != nil {
+		return err
+	}
+	if user == nil {
+		return error_code.ErrUserNotFound
+	}
+
+	if user.Nickname != command.Nickname {
+		if err := s.isNicknameExists(ctx, command.Nickname); err != nil {
+			return err
+		}
+	}
+
+	user.Nickname = command.Nickname
+	_, err = s.userRepository.Update(ctx, user)
+	return err
 }
 
 func (s *UserService) isUsernameExists(ctx context.Context, username string) error {

@@ -10,3 +10,12 @@ type SignInCommand struct {
 	Username string
 	Password string
 }
+
+type ChangePasswordCommand struct {
+	CurrentPassword string
+	NewPassword     string
+}
+
+type ChangeNicknameCommand struct {
+	Nickname string
+}
