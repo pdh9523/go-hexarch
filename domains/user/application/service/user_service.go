@@ -43,6 +43,21 @@ func (s *UserService) CheckNicknameAvailability(
 	return nil
 }
 
+func (s *UserService) CheckUsernameAvailability(
+	ctx context.Context,
+	query query.CheckUsernameQuery,
+) error {
+	if err := domain.ValidateUsername(query.Username); err != nil {
+		return err
+	}
+
+	if err := s.isUsernameExists(ctx, query.Username); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (s *UserService) SignUp(
 	ctx context.Context,
 	command command.SignUpCommand,
