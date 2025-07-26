@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/pdh9523/go-hexarch/shared/security/error_code"
 	"golang.org/x/crypto/argon2"
 )
 
@@ -53,7 +54,7 @@ func (h *Argon2PasswordHasher) HashPassword(password string) (string, error) {
 func (h *Argon2PasswordHasher) VerifyPassword(hashedPassword, password string) error {
 	salt, hash, err := h.decodeHash(hashedPassword)
 	if err != nil {
-		return errors.New("failed to decode hash: " + err.Error())
+		return err
 	}
 
 	otherHash := argon2.IDKey([]byte(password), salt, h.iterations, h.memory, h.parallelism, h.keyLength)
@@ -61,37 +62,37 @@ func (h *Argon2PasswordHasher) VerifyPassword(hashedPassword, password string) e
 	if subtle.ConstantTimeCompare(hash, otherHash) == 1 {
 		return nil
 	}
-	return errors.New("failed to verify password")
+	return error_code.ErrPasswordMismatch
 }
 
 func (h *Argon2PasswordHasher) decodeHash(encodedHash string) (salt, hash []byte, err error) {
 	parts := strings.Split(encodedHash, "$")
 	if len(parts) != 6 {
-		return nil, nil, errors.New("invalid hash format")
+		return nil, nil, error_code.ErrInvalidHashFormat
 	}
 
 	var version int
 	_, err = fmt.Sscanf(parts[2], "v=%d", &version)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, fmt.Errorf("%w: %v", error_code.ErrHashDecodingFailed, err)
 	}
 	if version != argon2.Version {
-		return nil, nil, errors.New("incompatible version of argon2")
+		return nil, nil, error_code.ErrIncompatibleHashVersion
 	}
 
 	_, err = fmt.Sscanf(parts[3], "m=%d,t=%d,p=%d", &h.memory, &h.iterations, &h.parallelism)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, fmt.Errorf("%w: %v", error_code.ErrHashDecodingFailed, err)
 	}
 
 	salt, err = base64.RawStdEncoding.DecodeString(parts[4])
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, fmt.Errorf("%w: %v", error_code.ErrHashDecodingFailed, err)
 	}
 
 	hash, err = base64.RawStdEncoding.DecodeString(parts[5])
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, fmt.Errorf("%w: %v", error_code.ErrHashDecodingFailed, err)
 	}
 
 	return salt, hash, nil
