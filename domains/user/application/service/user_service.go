@@ -31,16 +31,16 @@ func NewUserService(
 func (s *UserService) CheckNicknameAvailability(
 	ctx context.Context,
 	query query.CheckNicknameQuery,
-) (*result.CheckNicknameResult, error) {
+) error {
 	if err := domain.ValidateNickname(query.Nickname); err != nil {
-		return nil, err
+		return err
 	}
 
 	if err := s.isNicknameExists(ctx, query.Nickname); err != nil {
-		return nil, err
+		return err
 	}
 
-	return result.NewCheckNicknameResult(), nil
+	return nil
 }
 
 func (s *UserService) SignUp(
