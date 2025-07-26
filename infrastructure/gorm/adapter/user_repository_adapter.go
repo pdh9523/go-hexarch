@@ -26,7 +26,7 @@ func (a *UserRepositoryAdapter) FindByID(ctx context.Context, id string) (*domai
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}
-		return nil, err
+		return nil, mapper.ToDomainError(err)
 	}
 	return mapper.ToDomainUser(&userModel)
 }
@@ -37,7 +37,7 @@ func (a *UserRepositoryAdapter) FindByNickname(ctx context.Context, nickname str
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}
-		return nil, err
+		return nil, mapper.ToDomainError(err)
 	}
 	return mapper.ToDomainUser(&userModel)
 }
