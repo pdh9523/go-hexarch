@@ -219,6 +219,36 @@ func TestUserRepositoryAdapter_FindByNickname(t *testing.T) {
 	})
 }
 
+func TestUserRepositoryAdapter_FindByUsername(t *testing.T) {
+	t.Run("Given existing user when find by Username then should return user", func(t *testing.T) {
+		db := setupTestDB(t)
+		repo := NewUserRepositoryAdapter(db)
+		user1 := createTestModelUser(db, "test", "test")
+		foundUser, err := repo.FindByUsername(context.Background(), user1.Username)
+		assert.NoError(t, err)
+		assert.NotNil(t, foundUser)
+		assert.Equal(t, user1.ID, foundUser.ID)
+	})
+
+	t.Run("Given non-existing user when find by Username then should return nil", func(t *testing.T) {
+		db := setupTestDB(t)
+		repo := NewUserRepositoryAdapter(db)
+		_ = createTestModelUser(db, "test", "test")
+		foundUser, err := repo.FindByUsername(context.Background(), "other")
+		assert.NoError(t, err)
+		assert.Nil(t, foundUser)
+	})
+
+	t.Run("Given blank username when find by Username then should return nil", func(t *testing.T) {
+		db := setupTestDB(t)
+		repo := NewUserRepositoryAdapter(db)
+		_ = createTestModelUser(db, "test", "test")
+		foundUser, err := repo.FindByUsername(context.Background(), "")
+		assert.NoError(t, err)
+		assert.Nil(t, foundUser)
+	})
+}
+
 func TestUserRepositoryAdapter_ExistsByNickname(t *testing.T) {
 	t.Run("Given existing nickname when check nickname existence then should return true", func(t *testing.T) {
 		db := setupTestDB(t)
