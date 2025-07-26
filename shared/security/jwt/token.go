@@ -2,10 +2,10 @@ package jwt
 
 import (
 	"errors"
-	"github.com/pdh9523/go-hexarch/shared/security/config"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/pdh9523/go-hexarch/shared/security/config"
 )
 
 type Manager interface {
