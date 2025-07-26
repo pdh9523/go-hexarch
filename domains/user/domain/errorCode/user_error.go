@@ -21,6 +21,7 @@ var (
 	ErrPasswordMissingNumber      = errors.New("password must contain at least one number")
 	ErrPasswordMissingSpecialChar = errors.New("password must contain at least one special character")
 
-	ErrUserNotFound      = errors.New("user not found")
-	ErrUserAlreadyExists = errors.New("user already exists")
+	ErrUserNotFound       = errors.New("user not found")
+	ErrUserAlreadyExists  = errors.New("user already exists")
+	ErrInvalidCredentials = errors.New("invalid credentials")
 )
