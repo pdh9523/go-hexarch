@@ -4,7 +4,7 @@ import (
 	"regexp"
 	"unicode/utf8"
 
-	"github.com/pdh9523/go-hexarch/domains/user/domain/errorCode"
+	"github.com/pdh9523/go-hexarch/domains/user/domain/error_code"
 )
 
 type User struct {
@@ -45,26 +45,26 @@ func NewUser(nickname, username, hashedPassword string) (*User, error) {
 
 func ValidateUsername(value string) error {
 	if length := len(value); length > MaxUsernameLength {
-		return errorCode.ErrUsernameTooLong
+		return error_code.ErrUsernameTooLong
 	} else if length < MinUsernameLength {
-		return errorCode.ErrUsernameTooShort
+		return error_code.ErrUsernameTooShort
 	}
 
 	if !usernameRegex.MatchString(value) {
-		return errorCode.ErrUsernameInvalidCharacters
+		return error_code.ErrUsernameInvalidCharacters
 	}
 	return nil
 }
 
 func ValidateNickname(value string) error {
 	if length := utf8.RuneCountInString(value); length > MaxNicknameLength {
-		return errorCode.ErrNicknameTooLong
+		return error_code.ErrNicknameTooLong
 	} else if length < MinNicknameLength {
-		return errorCode.ErrNicknameTooShort
+		return error_code.ErrNicknameTooShort
 	}
 
 	if !nicknameRegex.MatchString(value) {
-		return errorCode.ErrNicknameInvalidCharacters
+		return error_code.ErrNicknameInvalidCharacters
 	}
 	return nil
 }

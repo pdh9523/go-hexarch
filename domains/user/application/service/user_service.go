@@ -7,7 +7,7 @@ import (
 	"github.com/pdh9523/go-hexarch/domains/user/application/port/in/query"
 	port "github.com/pdh9523/go-hexarch/domains/user/application/port/out"
 	"github.com/pdh9523/go-hexarch/domains/user/domain"
-	"github.com/pdh9523/go-hexarch/domains/user/domain/errorCode"
+	"github.com/pdh9523/go-hexarch/domains/user/domain/error_code"
 	"github.com/pdh9523/go-hexarch/domains/user/domain/result"
 	"github.com/pdh9523/go-hexarch/shared/security"
 	"regexp"
@@ -93,11 +93,11 @@ func (s *UserService) SignIn(ctx context.Context, command command.SignInCommand)
 	}
 
 	if user == nil {
-		return nil, errorCode.ErrInvalidCredentials
+		return nil, error_code.ErrInvalidCredentials
 	}
 
 	if err = s.securityManager.VerifyPassword(user.Password, command.Password); err != nil {
-		return nil, errorCode.ErrInvalidCredentials
+		return nil, error_code.ErrInvalidCredentials
 	}
 
 	token, err := s.securityManager.GenerateTokens(user.Username, user.Role.ToString())
@@ -112,7 +112,7 @@ func (s *UserService) isUsernameExists(ctx context.Context, username string) err
 	if err != nil {
 		return err
 	} else if exists {
-		return errorCode.ErrUsernameAlreadyExists
+		return error_code.ErrUsernameAlreadyExists
 	}
 
 	return nil
@@ -123,7 +123,7 @@ func (s *UserService) isNicknameExists(ctx context.Context, nickname string) err
 	if err != nil {
 		return err
 	} else if exists {
-		return errorCode.ErrNicknameAlreadyExists
+		return error_code.ErrNicknameAlreadyExists
 	}
 	return nil
 }
@@ -132,30 +132,30 @@ func validatePassword(password string) error {
 	passwordRegex := regexp.MustCompile(`^[A-Za-z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>/?]+$`)
 
 	if len(password) < 8 {
-		return errorCode.ErrPasswordTooShort
+		return error_code.ErrPasswordTooShort
 	}
 	if len(password) > 32 {
-		return errorCode.ErrPasswordTooLong
+		return error_code.ErrPasswordTooLong
 	}
 
 	if !passwordRegex.MatchString(password) {
-		return errorCode.ErrPasswordInvalidCharacters
+		return error_code.ErrPasswordInvalidCharacters
 	}
 
 	if matched, _ := regexp.MatchString(`[A-Z]`, password); !matched {
-		return errorCode.ErrPasswordMissingUppercase
+		return error_code.ErrPasswordMissingUppercase
 	}
 
 	if matched, _ := regexp.MatchString(`[a-z]`, password); !matched {
-		return errorCode.ErrPasswordMissingLowercase
+		return error_code.ErrPasswordMissingLowercase
 	}
 
 	if matched, _ := regexp.MatchString(`[0-9]`, password); !matched {
-		return errorCode.ErrPasswordMissingNumber
+		return error_code.ErrPasswordMissingNumber
 	}
 
 	if matched, _ := regexp.MatchString(`[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>/?]`, password); !matched {
-		return errorCode.ErrPasswordMissingSpecialChar
+		return error_code.ErrPasswordMissingSpecialChar
 	}
 
 	return nil

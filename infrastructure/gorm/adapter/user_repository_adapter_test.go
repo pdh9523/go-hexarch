@@ -3,7 +3,7 @@ package adapter
 import (
 	"context"
 	"github.com/pdh9523/go-hexarch/domains/user/domain"
-	userError "github.com/pdh9523/go-hexarch/domains/user/domain/errorCode"
+	userError "github.com/pdh9523/go-hexarch/domains/user/domain/error_code"
 	"github.com/pdh9523/go-hexarch/infrastructure/gorm/mapper"
 	"github.com/pdh9523/go-hexarch/infrastructure/gorm/model"
 	"github.com/stretchr/testify/assert"

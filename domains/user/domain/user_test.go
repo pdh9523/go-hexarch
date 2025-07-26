@@ -1,7 +1,7 @@
 package domain
 
 import (
-	"github.com/pdh9523/go-hexarch/domains/user/domain/errorCode"
+	"github.com/pdh9523/go-hexarch/domains/user/domain/error_code"
 	"github.com/stretchr/testify/assert"
 	"strings"
 	"testing"
@@ -29,7 +29,7 @@ func TestNewUser(t *testing.T) {
 
 		assert.Error(t, err)
 		assert.Nil(t, user)
-		assert.ErrorIs(t, err, errorCode.ErrUsernameInvalidCharacters)
+		assert.ErrorIs(t, err, error_code.ErrUsernameInvalidCharacters)
 	})
 
 	t.Run("Given invalid nickname when create user then should return error", func(t *testing.T) {
@@ -40,7 +40,7 @@ func TestNewUser(t *testing.T) {
 
 		assert.Error(t, err)
 		assert.Nil(t, user)
-		assert.ErrorIs(t, err, errorCode.ErrNicknameInvalidCharacters)
+		assert.ErrorIs(t, err, error_code.ErrNicknameInvalidCharacters)
 	})
 }
 
@@ -69,18 +69,18 @@ func TestValidateUsername(t *testing.T) {
 
 		for _, username := range shortUsernames {
 			err := ValidateUsername(username)
-			assert.ErrorIs(t, err, errorCode.ErrUsernameTooShort, "Username should be too short: %s", username)
+			assert.ErrorIs(t, err, error_code.ErrUsernameTooShort, "Username should be too short: %s", username)
 		}
 	})
 
 	t.Run("Given too long username when validate then should return error", func(t *testing.T) {
 		longUsername := strings.Repeat("a", 17) // 17자
 		err := ValidateUsername(longUsername)
-		assert.ErrorIs(t, err, errorCode.ErrUsernameTooLong)
+		assert.ErrorIs(t, err, error_code.ErrUsernameTooLong)
 
 		veryLongUsername := strings.Repeat("a", 40) // 40자
 		err = ValidateUsername(veryLongUsername)
-		assert.ErrorIs(t, err, errorCode.ErrUsernameTooLong)
+		assert.ErrorIs(t, err, error_code.ErrUsernameTooLong)
 	})
 
 	t.Run("Given username with invalid characters when validate then should return error", func(t *testing.T) {
@@ -99,7 +99,7 @@ func TestValidateUsername(t *testing.T) {
 
 		for _, username := range invalidUsernames {
 			err := ValidateUsername(username)
-			assert.ErrorIs(t, err, errorCode.ErrUsernameInvalidCharacters, "Username should be invalid: %s", username)
+			assert.ErrorIs(t, err, error_code.ErrUsernameInvalidCharacters, "Username should be invalid: %s", username)
 		}
 	})
 }
@@ -133,18 +133,18 @@ func TestValidateNickname(t *testing.T) {
 
 		for _, nickname := range shortNicknames {
 			err := ValidateNickname(nickname)
-			assert.ErrorIs(t, err, errorCode.ErrNicknameTooShort, "Nickname should be too short: %s", nickname)
+			assert.ErrorIs(t, err, error_code.ErrNicknameTooShort, "Nickname should be too short: %s", nickname)
 		}
 	})
 
 	t.Run("Given too long nickname when validate then should return error", func(t *testing.T) {
 		longNickname := strings.Repeat("a", 21) // 21자
 		err := ValidateNickname(longNickname)
-		assert.ErrorIs(t, err, errorCode.ErrNicknameTooLong)
+		assert.ErrorIs(t, err, error_code.ErrNicknameTooLong)
 
 		longKoreanNickname := strings.Repeat("한", 21) // 21자 한글
 		err = ValidateNickname(longKoreanNickname)
-		assert.ErrorIs(t, err, errorCode.ErrNicknameTooLong)
+		assert.ErrorIs(t, err, error_code.ErrNicknameTooLong)
 	})
 
 	t.Run("Given nickname with invalid characters when validate then should return error", func(t *testing.T) {
@@ -163,7 +163,7 @@ func TestValidateNickname(t *testing.T) {
 
 		for _, nickname := range invalidNicknames {
 			err := ValidateNickname(nickname)
-			assert.ErrorIs(t, err, errorCode.ErrNicknameInvalidCharacters, "Nickname should be invalid: %s", nickname)
+			assert.ErrorIs(t, err, error_code.ErrNicknameInvalidCharacters, "Nickname should be invalid: %s", nickname)
 		}
 	})
 
