@@ -16,15 +16,18 @@ import (
 type UserService struct {
 	securityManager security.Manager
 	userRepository  port.UserRepositoryPort
+	userCache       port.UserCachePort
 }
 
 func NewUserService(
 	securityManager security.Manager,
 	userRepository port.UserRepositoryPort,
+	userCache port.UserCachePort,
 ) usecase.UserUseCase {
 	return &UserService{
 		securityManager: securityManager,
 		userRepository:  userRepository,
+		userCache:       userCache,
 	}
 }
 
@@ -123,6 +126,15 @@ func (s *UserService) SignIn(
 		return nil, err
 	}
 	return result.NewTokenResult(token), nil
+}
+
+func (s *UserService) SignOut(ctx context.Context) error {
+	userID, ok := ctx.Value("user_id").(string)
+	if !ok || userID == "" {
+		return error_code.ErrInvalidCredentials
+	}
+
+	return s.userCache.DeleteRefreshToken(ctx, userID)
 }
 
 func (s *UserService) ChangePassword(

@@ -12,6 +12,7 @@ type UserUseCase interface {
 	CheckUsernameAvailability(cxt context.Context, query query.CheckUsernameQuery) error
 	SignUp(ctx context.Context, command command.SignUpCommand) (*result.TokenResult, error)
 	SignIn(ctx context.Context, command command.SignInCommand) (*result.TokenResult, error)
+	SignOut(ctx context.Context) error
 	ChangePassword(ctx context.Context, command command.ChangePasswordCommand) error
 	ChangeNickname(ctx context.Context, command command.ChangeNicknameCommand) error
 }
