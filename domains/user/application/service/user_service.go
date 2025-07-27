@@ -97,6 +97,10 @@ func (s *UserService) SignUp(
 		return nil, err
 	}
 
+	if err := s.userCache.SetRefreshToken(ctx, user.ID, token.RefreshToken, s.securityManager.GetRefreshTokenTTL()); err != nil {
+		return nil, err
+	}
+
 	return result.NewTokenResult(token), nil
 }
 
@@ -125,6 +129,11 @@ func (s *UserService) SignIn(
 	if err != nil {
 		return nil, err
 	}
+
+	if err := s.userCache.SetRefreshToken(ctx, user.ID, token.RefreshToken, s.securityManager.GetRefreshTokenTTL()); err != nil {
+		return nil, err
+	}
+
 	return result.NewTokenResult(token), nil
 }
 
