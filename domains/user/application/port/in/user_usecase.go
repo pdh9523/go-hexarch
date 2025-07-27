@@ -8,6 +8,7 @@ import (
 )
 
 type UserUseCase interface {
+	GetMyInfo(cxt context.Context) (*result.UserInfoResult, error)
 	CheckNicknameAvailability(cxt context.Context, query query.CheckNicknameQuery) error
 	CheckUsernameAvailability(cxt context.Context, query query.CheckUsernameQuery) error
 	SignUp(ctx context.Context, command command.SignUpCommand) (*result.TokenResult, error)

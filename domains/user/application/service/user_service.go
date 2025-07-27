@@ -30,6 +30,24 @@ func NewUserService(
 		userCache:       userCache,
 	}
 }
+func (s *UserService) GetMyInfo(
+	ctx context.Context,
+) (*result.UserInfoResult, error) {
+	userID, ok := ctx.Value("user_id").(string)
+	if !ok {
+		return nil, error_code.ErrInvalidCredentials
+	}
+	if userID == "" {
+		return nil, error_code.ErrInvalidCredentials
+	}
+
+	user, err := s.userRepository.FindByID(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	return result.NewUserInfoResult(user), nil
+}
 
 func (s *UserService) CheckNicknameAvailability(
 	ctx context.Context,
