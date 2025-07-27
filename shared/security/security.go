@@ -4,6 +4,7 @@ import (
 	"github.com/pdh9523/go-hexarch/shared/security/config"
 	"github.com/pdh9523/go-hexarch/shared/security/crypto"
 	"github.com/pdh9523/go-hexarch/shared/security/jwt"
+	"time"
 )
 
 type Manager interface {
@@ -15,6 +16,8 @@ type Manager interface {
 	ValidateRefreshToken(refreshToken string) (*jwt.RefreshTokenClaims, error)
 	RefreshTokens(refreshToken string) (*jwt.Token, error)
 	ExtractTokenFromBearer(bearerToken string) (string, error)
+
+	GetRefreshTokenTTL() time.Duration
 }
 
 type DefaultManager struct {
@@ -62,4 +65,8 @@ func (sm *DefaultManager) RefreshTokens(refreshToken string) (*jwt.Token, error)
 // ExtractTokenFromBearer Bearer 토큰에서 실제 토큰 추출
 func (sm *DefaultManager) ExtractTokenFromBearer(bearerToken string) (string, error) {
 	return sm.ExtractTokenFromBearer(bearerToken)
+}
+
+func (sm *DefaultManager) GetRefreshTokenTTL() time.Duration {
+	return sm.tokenManager.GetRefreshTokenTTL()
 }

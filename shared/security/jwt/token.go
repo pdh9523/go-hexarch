@@ -14,6 +14,7 @@ type Manager interface {
 	ValidateRefreshToken(refreshToken string) (*RefreshTokenClaims, error)
 	RefreshTokens(refreshToken string) (*Token, error)
 	ExtractTokenFromBearer(bearerToken string) (string, error)
+	GetRefreshTokenTTL() time.Duration
 }
 
 type Token struct {
@@ -126,4 +127,8 @@ func (t *TokenManager) ExtractTokenFromBearer(bearerToken string) (string, error
 		return "", errors.New("invalid bearer token format")
 	}
 	return bearerToken[7:], nil
+}
+
+func (t *TokenManager) GetRefreshTokenTTL() time.Duration {
+	return t.refreshTokenTTL
 }
