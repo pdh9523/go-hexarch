@@ -13,7 +13,10 @@ var (
 	ErrHashDecodingFailed      = errors.New("hash decoding failed")
 
 	// 토큰 관련 에러
-	ErrTokenGenerationFailed = errors.New("token generation failed")
-	ErrTokenInvalid          = errors.New("invalid token")
-	ErrTokenExpired          = errors.New("token expired")
+	ErrTokenGenerationFailed        = errors.New("token generation failed")
+	ErrTokenInvalid                 = errors.New("invalid token")
+	ErrTokenExpired                 = errors.New("token expired")
+	ErrTokenUnexpectedSigningMethod = errors.New("unexpected token signing method")
+	ErrTokenMissingAlgorithm        = errors.New("missing algorithm in token header")
+	ErrTokenClaimsParseFailed       = errors.New("failed to parse token claims")
 )

@@ -2,10 +2,12 @@ package jwt
 
 import (
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/pdh9523/go-hexarch/shared/security/config"
+	securityError "github.com/pdh9523/go-hexarch/shared/security/error_code"
 )
 
 type Manager interface {
@@ -15,6 +17,7 @@ type Manager interface {
 	RefreshTokens(refreshToken string) (*Token, error)
 	ExtractTokenFromBearer(bearerToken string) (string, error)
 	GetRefreshTokenTTL() time.Duration
+	ExtractAccessTokenClaims(accessToken string) (*AccessTokenClaims, error)
 }
 
 type Token struct {
@@ -39,8 +42,6 @@ func NewTokenManager(config config.TokenConfig) *TokenManager {
 	}
 }
 
-func (t *TokenManager) GenerateTokens(username, role string) (*Token, error) {
-	accessToken, err := t.generateAccessToken(username, role)
 func (t *TokenManager) GenerateTokens(userID, role string) (*Token, error) {
 	accessToken, err := t.generateAccessToken(userID, role)
 	if err != nil {
@@ -118,8 +119,8 @@ func (t *TokenManager) generateAccessToken(userID, role string) (string, error) 
 	return token.SignedString(t.accessTokenSecret)
 }
 
-func (t *TokenManager) generateRefreshToken(username, role string) (string, error) {
-	claims := NewRefreshTokenClaims(username, role, t.refreshTokenTTL)
+func (t *TokenManager) generateRefreshToken(userID, role string) (string, error) {
+	claims := NewRefreshTokenClaims(userID, role, t.refreshTokenTTL)
 	token := jwt.NewWithClaims(t.signingMethod, claims)
 	return token.SignedString(t.refreshTokenSecret)
 }
@@ -129,6 +130,48 @@ func (t *TokenManager) ExtractTokenFromBearer(bearerToken string) (string, error
 		return "", errors.New("invalid bearer token format")
 	}
 	return bearerToken[7:], nil
+}
+
+func (t *TokenManager) ExtractAccessTokenClaims(accessToken string) (*AccessTokenClaims, error) {
+	token, err := jwt.ParseWithClaims(accessToken, &AccessTokenClaims{}, func(token *jwt.Token) (interface{}, error) {
+		// 알고리즘 검증 - 화이트리스트 방식
+		if token.Method != jwt.SigningMethodHS256 {
+			alg, ok := token.Header["alg"].(string)
+			if !ok {
+				return nil, securityError.ErrTokenMissingAlgorithm
+			}
+			return nil, fmt.Errorf("%w: %s", securityError.ErrTokenUnexpectedSigningMethod, alg)
+		}
+		return t.accessTokenSecret, nil
+	})
+
+	if err != nil {
+		// JWT v5에서는 에러 타입이 변경됨
+		if errors.Is(err, jwt.ErrTokenExpired) {
+			return nil, securityError.ErrTokenExpired
+		}
+		if errors.Is(err, jwt.ErrTokenNotValidYet) {
+			return nil, securityError.ErrTokenInvalid
+		}
+		if errors.Is(err, jwt.ErrTokenMalformed) {
+			return nil, securityError.ErrTokenInvalid
+		}
+		if errors.Is(err, jwt.ErrTokenSignatureInvalid) {
+			return nil, securityError.ErrTokenInvalid
+		}
+		return nil, fmt.Errorf("%w: %v", securityError.ErrTokenInvalid, err)
+	}
+
+	claims, ok := token.Claims.(*AccessTokenClaims)
+	if !ok {
+		return nil, securityError.ErrTokenClaimsParseFailed
+	}
+
+	if !token.Valid {
+		return nil, securityError.ErrTokenInvalid
+	}
+
+	return claims, nil
 }
 
 func (t *TokenManager) GetRefreshTokenTTL() time.Duration {

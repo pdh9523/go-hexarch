@@ -18,6 +18,7 @@ type Manager interface {
 	ExtractTokenFromBearer(bearerToken string) (string, error)
 
 	GetRefreshTokenTTL() time.Duration
+	ExtractAccessTokenClaims(accessToken string) (*jwt.AccessTokenClaims, error)
 }
 
 type DefaultManager struct {
@@ -64,9 +65,13 @@ func (sm *DefaultManager) RefreshTokens(refreshToken string) (*jwt.Token, error)
 
 // ExtractTokenFromBearer Bearer 토큰에서 실제 토큰 추출
 func (sm *DefaultManager) ExtractTokenFromBearer(bearerToken string) (string, error) {
-	return sm.ExtractTokenFromBearer(bearerToken)
+	return sm.tokenManager.ExtractTokenFromBearer(bearerToken)
 }
 
 func (sm *DefaultManager) GetRefreshTokenTTL() time.Duration {
 	return sm.tokenManager.GetRefreshTokenTTL()
+}
+
+func (sm *DefaultManager) ExtractAccessTokenClaims(accessToken string) (*jwt.AccessTokenClaims, error) {
+	return sm.tokenManager.ExtractAccessTokenClaims(accessToken)
 }

@@ -2,6 +2,7 @@ package error_code
 
 import (
 	userError "github.com/pdh9523/go-hexarch/domains/user/domain/error_code"
+	securityError "github.com/pdh9523/go-hexarch/shared/security/error_code"
 	"net/http"
 )
 
@@ -73,6 +74,28 @@ var errorMappings = map[error]ErrorMapping{
 	userError.ErrPasswordMissingSpecialChar: {
 		Code:       "password_missing_special_char",
 		HttpStatus: http.StatusBadRequest,
+	},
+
+	// Security/Token errors
+	securityError.ErrTokenInvalid: {
+		Code:       "token_invalid",
+		HttpStatus: http.StatusUnauthorized,
+	},
+	securityError.ErrTokenExpired: {
+		Code:       "token_expired",
+		HttpStatus: http.StatusUnauthorized,
+	},
+	securityError.ErrTokenUnexpectedSigningMethod: {
+		Code:       "token_invalid_signing_method",
+		HttpStatus: http.StatusUnauthorized,
+	},
+	securityError.ErrTokenMissingAlgorithm: {
+		Code:       "token_invalid_format",
+		HttpStatus: http.StatusUnauthorized,
+	},
+	securityError.ErrTokenClaimsParseFailed: {
+		Code:       "token_invalid_claims",
+		HttpStatus: http.StatusUnauthorized,
 	},
 }
 
