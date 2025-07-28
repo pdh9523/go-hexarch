@@ -1,14 +1,9 @@
-package mapper
+package error_code
 
 import (
 	userError "github.com/pdh9523/go-hexarch/domains/user/domain/error_code"
 	"net/http"
 )
-
-type ErrorCode struct {
-	Code string
-	err  error
-}
 
 type ErrorMapping struct {
 	Code       string
@@ -90,9 +85,4 @@ func GetErrorMapping(err error) ErrorMapping {
 		}
 	}
 	return mapping
-}
-
-func GetErrorCode(err error) string {
-	mapping, _ := errorMappings[err]
-	return mapping.Code
 }

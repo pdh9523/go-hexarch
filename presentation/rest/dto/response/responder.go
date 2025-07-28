@@ -2,7 +2,7 @@ package response
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/pdh9523/go-hexarch/presentation/rest/mapper"
+	"github.com/pdh9523/go-hexarch/presentation/rest/error_code"
 	"net/http"
 )
 
@@ -22,6 +22,6 @@ func (r *Responder) Created(c *gin.Context, data interface{}) {
 }
 
 func (r *Responder) Error(c *gin.Context, err error) {
-	mapping := mapper.GetErrorMapping(err)
+	mapping := error_code.GetErrorMapping(err)
 	c.JSON(mapping.HttpStatus, NewErrorResponse(mapping.Code, err.Error()))
 }
