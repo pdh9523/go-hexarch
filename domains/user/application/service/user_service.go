@@ -110,7 +110,7 @@ func (s *UserService) SignUp(
 		return nil, err
 	}
 
-	token, err := s.securityManager.GenerateTokens(savedUser.Username, savedUser.Role.ToString())
+	token, err := s.securityManager.GenerateTokens(savedUser.ID, savedUser.Role.ToString())
 	if err != nil {
 		return nil, err
 	}
@@ -143,7 +143,7 @@ func (s *UserService) SignIn(
 		return nil, error_code.ErrInvalidCredentials
 	}
 
-	token, err := s.securityManager.GenerateTokens(user.Username, user.Role.ToString())
+	token, err := s.securityManager.GenerateTokens(user.ID, user.Role.ToString())
 	if err != nil {
 		return nil, err
 	}

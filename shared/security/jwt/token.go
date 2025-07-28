@@ -9,7 +9,7 @@ import (
 )
 
 type Manager interface {
-	GenerateTokens(username, role string) (*Token, error)
+	GenerateTokens(userID, role string) (*Token, error)
 	ValidateAccessToken(accessToken string) (*AccessTokenClaims, error)
 	ValidateRefreshToken(refreshToken string) (*RefreshTokenClaims, error)
 	RefreshTokens(refreshToken string) (*Token, error)
@@ -41,10 +41,12 @@ func NewTokenManager(config config.TokenConfig) *TokenManager {
 
 func (t *TokenManager) GenerateTokens(username, role string) (*Token, error) {
 	accessToken, err := t.generateAccessToken(username, role)
+func (t *TokenManager) GenerateTokens(userID, role string) (*Token, error) {
+	accessToken, err := t.generateAccessToken(userID, role)
 	if err != nil {
 		return nil, err
 	}
-	refreshToken, err := t.generateRefreshToken(username, role)
+	refreshToken, err := t.generateRefreshToken(userID, role)
 	if err != nil {
 		return nil, err
 	}
@@ -103,15 +105,15 @@ func (t *TokenManager) RefreshTokens(refreshToken string) (*Token, error) {
 		return nil, errors.New("invalid refresh token" + err.Error())
 	}
 
-	tokens, err := t.GenerateTokens(claims.Username, claims.Role)
+	tokens, err := t.GenerateTokens(claims.UserID, claims.Role)
 	if err != nil {
 		return nil, err
 	}
 	return tokens, nil
 }
 
-func (t *TokenManager) generateAccessToken(username, role string) (string, error) {
-	claims := NewAccessTokenClaims(username, role, t.accessTokenTTL)
+func (t *TokenManager) generateAccessToken(userID, role string) (string, error) {
+	claims := NewAccessTokenClaims(userID, role, t.accessTokenTTL)
 	token := jwt.NewWithClaims(t.signingMethod, claims)
 	return token.SignedString(t.accessTokenSecret)
 }
