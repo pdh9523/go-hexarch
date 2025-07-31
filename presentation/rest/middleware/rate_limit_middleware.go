@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"context"
 	"github.com/gin-gonic/gin"
 	"github.com/pdh9523/go-hexarch/presentation/rest/dto/response"
 	commonError "github.com/pdh9523/go-hexarch/shared/common/error_code"
@@ -15,6 +16,8 @@ type RateLimiter struct {
 	burst       int
 	cleanupRate time.Duration
 	expireAfter time.Duration
+	ctx         context.Context
+	cancelFunc  context.CancelFunc
 }
 
 type Visitor struct {
@@ -23,12 +26,16 @@ type Visitor struct {
 }
 
 func NewRateLimiter(rate time.Duration, burst int) *RateLimiter {
+	ctx, cancel := context.WithCancel(context.Background())
+
 	rl := &RateLimiter{
 		visitors:    make(map[string]*Visitor),
 		rate:        rate,
 		burst:       burst,
 		cleanupRate: time.Minute,
 		expireAfter: time.Hour,
+		ctx:         ctx,
+		cancelFunc:  cancel,
 	}
 
 	go rl.cleanupVisitors()
@@ -68,15 +75,26 @@ func (l *RateLimiter) cleanupVisitors() {
 	ticker := time.NewTicker(l.cleanupRate)
 	defer ticker.Stop()
 
-	for range ticker.C {
-		l.mu.Lock()
-		now := time.Now()
-		for ip, visitor := range l.visitors {
-			if now.Sub(visitor.lastSeen) > l.expireAfter {
-				delete(l.visitors, ip)
+	for {
+		select {
+		case <-l.ctx.Done():
+			return
+		case <-ticker.C:
+			l.mu.Lock()
+			now := time.Now()
+			for ip, visitor := range l.visitors {
+				if now.Sub(visitor.lastSeen) > l.expireAfter {
+					delete(l.visitors, ip)
+				}
 			}
+			l.mu.Unlock()
 		}
-		l.mu.Unlock()
+	}
+}
+
+func (l *RateLimiter) Close() {
+	if l.cancelFunc != nil {
+		l.cancelFunc()
 	}
 }
 
