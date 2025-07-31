@@ -3,7 +3,7 @@ package middleware
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/pdh9523/go-hexarch/presentation/rest/dto/response"
-	commonError "github.com/pdh9523/go-hexarch/shared/common/error_code"
+	httpError "github.com/pdh9523/go-hexarch/shared/common/error_code"
 	"github.com/pdh9523/go-hexarch/shared/security"
 	securityError "github.com/pdh9523/go-hexarch/shared/security/error_code"
 )
@@ -12,7 +12,7 @@ func AuthMiddleware(responder *response.Responder, securityManager security.Mana
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
-			responder.AbortWithError(c, commonError.ErrAuthorizationEmpty)
+			responder.AbortWithError(c, httpError.ErrAuthorizationEmpty)
 			return
 		}
 		token, err := securityManager.ExtractTokenFromBearer(authHeader)
@@ -22,13 +22,13 @@ func AuthMiddleware(responder *response.Responder, securityManager security.Mana
 		}
 
 		if token == "" {
-			responder.AbortWithError(c, commonError.ErrTokenEmpty)
+			responder.AbortWithError(c, httpError.ErrTokenEmpty)
 			return
 		}
 
 		accessTokenClaims, err := securityManager.ExtractAccessTokenClaims(token)
 		if err != nil {
-			responder.AbortWithError(c, commonError.ErrInvalidCredentials)
+			responder.AbortWithError(c, httpError.ErrInvalidCredentials)
 			return
 		}
 

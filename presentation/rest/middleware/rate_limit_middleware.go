@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/gin-gonic/gin"
 	"github.com/pdh9523/go-hexarch/presentation/rest/dto/response"
-	commonError "github.com/pdh9523/go-hexarch/shared/common/error_code"
+	httpError "github.com/pdh9523/go-hexarch/shared/common/error_code"
 	"sync"
 	"time"
 )
@@ -103,7 +103,7 @@ func RateLimitMiddleware(responder *response.Responder, rateLimiter *RateLimiter
 		ip := c.ClientIP()
 
 		if !rateLimiter.Allow(ip) {
-			responder.AbortWithError(c, commonError.ErrRateLimitExceeded)
+			responder.AbortWithError(c, httpError.ErrRateLimitExceeded)
 			return
 		}
 

@@ -5,7 +5,7 @@ import (
 	"github.com/pdh9523/go-hexarch/domains/user/domain"
 	userError "github.com/pdh9523/go-hexarch/domains/user/domain/error_code"
 	"github.com/pdh9523/go-hexarch/infrastructure/gorm/model"
-	commonError "github.com/pdh9523/go-hexarch/shared/common/error_code"
+	httpError "github.com/pdh9523/go-hexarch/shared/common/error_code"
 	"gorm.io/gorm"
 )
 
@@ -62,21 +62,21 @@ func ToDomainError(err error) error {
 	case errors.Is(err, gorm.ErrDuplicatedKey):
 		return userError.ErrUserAlreadyExists
 	case errors.Is(err, gorm.ErrInvalidTransaction):
-		return commonError.ErrInternalServerError
+		return httpError.ErrInternalServerError
 	case errors.Is(err, gorm.ErrNotImplemented):
-		return commonError.ErrInternalServerError
+		return httpError.ErrInternalServerError
 	case errors.Is(err, gorm.ErrMissingWhereClause):
-		return commonError.ErrInvalidRequest
+		return httpError.ErrInvalidRequest
 	case errors.Is(err, gorm.ErrUnsupportedRelation):
-		return commonError.ErrInternalServerError
+		return httpError.ErrInternalServerError
 	case errors.Is(err, gorm.ErrPrimaryKeyRequired):
-		return commonError.ErrInvalidRequest
+		return httpError.ErrInvalidRequest
 	case errors.Is(err, gorm.ErrModelValueRequired):
-		return commonError.ErrInvalidRequest
+		return httpError.ErrInvalidRequest
 	case errors.Is(err, gorm.ErrInvalidData):
-		return commonError.ErrInvalidRequest
+		return httpError.ErrInvalidRequest
 	default:
 		// 알 수 없는 DB 에러는 내부 서버 에러로 처리
-		return commonError.ErrInternalServerError
+		return httpError.ErrInternalServerError
 	}
 }

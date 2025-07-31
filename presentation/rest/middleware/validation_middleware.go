@@ -3,7 +3,7 @@ package middleware
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/pdh9523/go-hexarch/presentation/rest/dto/response"
-	commonError "github.com/pdh9523/go-hexarch/shared/common/error_code"
+	httpError "github.com/pdh9523/go-hexarch/shared/common/error_code"
 	"strings"
 )
 
@@ -24,7 +24,7 @@ func ContentTypeMiddleware(responder *response.Responder, allowedTypes ...string
 				}
 			}
 			if !allowed {
-				responder.AbortWithError(c, commonError.ErrUnsupportedMediaType)
+				responder.AbortWithError(c, httpError.ErrUnsupportedMediaType)
 				return
 			}
 		}
@@ -39,7 +39,7 @@ func JSONOnlyMiddleware(responder *response.Responder) gin.HandlerFunc {
 func RequestSizeMiddleware(responder *response.Responder, maxSize int64) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if c.Request.ContentLength > maxSize {
-			responder.AbortWithError(c, commonError.ErrRequestEntityTooLarge)
+			responder.AbortWithError(c, httpError.ErrRequestEntityTooLarge)
 			return
 		}
 		c.Next()
