@@ -58,6 +58,14 @@ func SetupMiddleware(
 		router.Use(RequestIDMiddleware())
 	}
 
+	if config.EnableCORS {
+		if len(config.AllowedOrigins) == 1 && config.AllowedOrigins[0] == "*" {
+			router.Use(CORSMiddleware())
+		} else {
+			router.Use(StrictCORSMiddleware(config.AllowedOrigins))
+		}
+	}
+
 	router.Use(RecoveryMiddleware(responder))
 }
 
