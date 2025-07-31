@@ -25,3 +25,8 @@ func (r *Responder) Error(c *gin.Context, err error) {
 	mapping := error_code.GetErrorMapping(err)
 	c.JSON(mapping.HttpStatus, NewErrorResponse(mapping.Code, err.Error()))
 }
+
+func (r *Responder) AbortWithError(c *gin.Context, err error) {
+	r.Error(c, err)
+	c.Abort()
+}

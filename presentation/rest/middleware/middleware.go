@@ -66,6 +66,10 @@ func SetupMiddleware(
 		}
 	}
 
+	if config.EnableRateLimit {
+		router.Use(IPBasedRateLimitMiddleware(responder, config.RateLimit))
+	}
+
 	router.Use(RecoveryMiddleware(responder))
 }
 
