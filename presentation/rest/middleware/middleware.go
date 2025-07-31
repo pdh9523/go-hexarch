@@ -58,6 +58,11 @@ func SetupMiddleware(
 		router.Use(RequestIDMiddleware())
 	}
 
+	if config.EnableSecurity {
+		router.Use(SecurityHeadersMiddleware())
+		router.Use(JSONOnlyMiddleware(responder))
+	}
+
 	if config.EnableCORS {
 		if len(config.AllowedOrigins) == 1 && config.AllowedOrigins[0] == "*" {
 			router.Use(CORSMiddleware())
