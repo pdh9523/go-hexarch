@@ -30,7 +30,7 @@ func CustomLoggingMiddleware(logger *zap.Logger) gin.HandlerFunc {
 			path = path + "?" + raw
 		}
 
-		requestID, exists := c.Get("X-Request-ID")
+		requestID, exists := c.Get("request_id")
 		if !exists {
 			requestID = "unknown"
 		}
