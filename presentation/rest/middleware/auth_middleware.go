@@ -18,6 +18,7 @@ func AuthMiddleware(responder *response.Responder, securityManager security.Mana
 		token, err := securityManager.ExtractTokenFromBearer(authHeader)
 		if err != nil {
 			responder.AbortWithError(c, securityError.ErrTokenInvalid)
+			return
 		}
 
 		if token == "" {
@@ -28,6 +29,7 @@ func AuthMiddleware(responder *response.Responder, securityManager security.Mana
 		accessTokenClaims, err := securityManager.ExtractAccessTokenClaims(token)
 		if err != nil {
 			responder.AbortWithError(c, commonError.ErrInvalidCredentials)
+			return
 		}
 
 		c.Set("user_id", accessTokenClaims.GetUserID())
@@ -50,6 +52,23 @@ func OptionalAuthMiddleware(securityManager security.Manager) gin.HandlerFunc {
 				}
 			}
 		}
+		c.Next()
+	}
+}
+
+func SecurityHeadersMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// XSS Protection
+		c.Header("X-XSS-Protection", "1; mode=block")
+		// Content Type Options
+		c.Header("X-Content-Type-Options", "nosniff")
+		// Frame Options
+		c.Header("X-Frame-Options", "DENY")
+		// Referrer Policy
+		c.Header("Referrer-Policy", "strict-origin-when-cross-origin")
+		// Content Security Policy (기본적인 정책)
+		c.Header("Content-Security-Policy", "default-src 'self'")
+
 		c.Next()
 	}
 }

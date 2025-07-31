@@ -86,6 +86,7 @@ func RateLimitMiddleware(responder *response.Responder, rateLimiter *RateLimiter
 
 		if !rateLimiter.Allow(ip) {
 			responder.AbortWithError(c, commonError.ErrRateLimitExceeded)
+			return
 		}
 
 		c.Next()
