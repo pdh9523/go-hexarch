@@ -2,7 +2,6 @@ package jwt
 
 import (
 	"errors"
-	"fmt"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -45,11 +44,11 @@ func NewTokenManager(config config.TokenConfig) *TokenManager {
 func (t *TokenManager) GenerateTokens(userID, role string) (*Token, error) {
 	accessToken, err := t.generateAccessToken(userID, role)
 	if err != nil {
-		return nil, err
+		return nil, securityError.ErrTokenGenerationFailed
 	}
 	refreshToken, err := t.generateRefreshToken(userID, role)
 	if err != nil {
-		return nil, err
+		return nil, securityError.ErrTokenGenerationFailed
 	}
 
 	return &Token{AccessToken: accessToken, RefreshToken: refreshToken}, nil
@@ -57,45 +56,63 @@ func (t *TokenManager) GenerateTokens(userID, role string) (*Token, error) {
 
 func (t *TokenManager) ValidateAccessToken(accessToken string) (*AccessTokenClaims, error) {
 	token, err := jwt.ParseWithClaims(accessToken, &AccessTokenClaims{}, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, errors.New("unexpected signing method" + token.Header["alg"].(string))
+		if token.Method != jwt.SigningMethodHS256 {
+			if _, ok := token.Header["alg"].(string); !ok {
+				return nil, securityError.ErrTokenMissingAlgorithm
+			}
+			return nil, securityError.ErrTokenUnexpectedSigningMethod
 		}
 		return t.accessTokenSecret, nil
 	})
 
 	if err != nil {
-		return nil, errors.New("failed to validate access token: " + err.Error())
+		if errors.Is(err, jwt.ErrTokenExpired) {
+			return nil, securityError.ErrTokenExpired
+		}
+		if errors.Is(err, jwt.ErrTokenNotValidYet) || errors.Is(err, jwt.ErrTokenMalformed) || errors.Is(err, jwt.ErrTokenSignatureInvalid) {
+			return nil, securityError.ErrTokenInvalid
+		}
+		return nil, securityError.ErrTokenInvalid
 	}
 
 	claims, ok := token.Claims.(*AccessTokenClaims)
 	if !ok || !token.Valid {
-		return nil, errors.New("invalid access token")
+		return nil, securityError.ErrTokenClaimsParseFailed
 	}
 
 	if claims.TokenType != "access_token" {
-		return nil, errors.New("not an access token")
+		return nil, securityError.ErrTokenInvalid
 	}
 	return claims, nil
 }
 
 func (t *TokenManager) ValidateRefreshToken(refreshToken string) (*RefreshTokenClaims, error) {
 	token, err := jwt.ParseWithClaims(refreshToken, &RefreshTokenClaims{}, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, errors.New("unexpected signing method" + token.Header["alg"].(string))
+		if token.Method != jwt.SigningMethodHS256 {
+			if _, ok := token.Header["alg"].(string); !ok {
+				return nil, securityError.ErrTokenMissingAlgorithm
+			}
+			return nil, securityError.ErrTokenUnexpectedSigningMethod
 		}
 		return t.refreshTokenSecret, nil
 	})
 
 	if err != nil {
-		return nil, errors.New("failed to validate refresh token: " + err.Error())
+		if errors.Is(err, jwt.ErrTokenExpired) {
+			return nil, securityError.ErrTokenExpired
+		}
+		if errors.Is(err, jwt.ErrTokenNotValidYet) || errors.Is(err, jwt.ErrTokenMalformed) || errors.Is(err, jwt.ErrTokenSignatureInvalid) {
+			return nil, securityError.ErrTokenInvalid
+		}
+		return nil, securityError.ErrTokenInvalid
 	}
 
 	claims, ok := token.Claims.(*RefreshTokenClaims)
 	if !ok || !token.Valid {
-		return nil, errors.New("invalid refresh token")
+		return nil, securityError.ErrTokenClaimsParseFailed
 	}
 	if claims.TokenType != "refresh_token" {
-		return nil, errors.New("not an refresh token")
+		return nil, securityError.ErrTokenInvalid
 	}
 	return claims, nil
 }
@@ -103,7 +120,7 @@ func (t *TokenManager) ValidateRefreshToken(refreshToken string) (*RefreshTokenC
 func (t *TokenManager) RefreshTokens(refreshToken string) (*Token, error) {
 	claims, err := t.ValidateRefreshToken(refreshToken)
 	if err != nil {
-		return nil, errors.New("invalid refresh token" + err.Error())
+		return nil, err
 	}
 
 	tokens, err := t.GenerateTokens(claims.UserID, claims.Role)
@@ -127,7 +144,7 @@ func (t *TokenManager) generateRefreshToken(userID, role string) (string, error)
 
 func (t *TokenManager) ExtractTokenFromBearer(bearerToken string) (string, error) {
 	if len(bearerToken) < 7 || bearerToken[:7] != "Bearer " {
-		return "", errors.New("invalid bearer token format")
+		return "", securityError.ErrTokenInvalid
 	}
 	return bearerToken[7:], nil
 }
@@ -136,17 +153,15 @@ func (t *TokenManager) ExtractAccessTokenClaims(accessToken string) (*AccessToke
 	token, err := jwt.ParseWithClaims(accessToken, &AccessTokenClaims{}, func(token *jwt.Token) (interface{}, error) {
 		// 알고리즘 검증 - 화이트리스트 방식
 		if token.Method != jwt.SigningMethodHS256 {
-			alg, ok := token.Header["alg"].(string)
-			if !ok {
+			if _, ok := token.Header["alg"].(string); !ok {
 				return nil, securityError.ErrTokenMissingAlgorithm
 			}
-			return nil, fmt.Errorf("%w: %s", securityError.ErrTokenUnexpectedSigningMethod, alg)
+			return nil, securityError.ErrTokenUnexpectedSigningMethod
 		}
 		return t.accessTokenSecret, nil
 	})
 
 	if err != nil {
-		// JWT v5에서는 에러 타입이 변경됨
 		if errors.Is(err, jwt.ErrTokenExpired) {
 			return nil, securityError.ErrTokenExpired
 		}
@@ -159,7 +174,7 @@ func (t *TokenManager) ExtractAccessTokenClaims(accessToken string) (*AccessToke
 		if errors.Is(err, jwt.ErrTokenSignatureInvalid) {
 			return nil, securityError.ErrTokenInvalid
 		}
-		return nil, fmt.Errorf("%w: %v", securityError.ErrTokenInvalid, err)
+		return nil, securityError.ErrTokenInvalid
 	}
 
 	claims, ok := token.Claims.(*AccessTokenClaims)

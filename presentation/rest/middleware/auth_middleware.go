@@ -17,18 +17,18 @@ func AuthMiddleware(responder *response.Responder, securityManager security.Mana
 		}
 		token, err := securityManager.ExtractTokenFromBearer(authHeader)
 		if err != nil {
-			responder.AbortWithError(c, securityError.ErrTokenInvalid)
+			responder.AbortWithError(c, err)
 			return
 		}
 
 		if token == "" {
-			responder.AbortWithError(c, httpError.ErrTokenEmpty)
+			responder.AbortWithError(c, securityError.ErrTokenEmpty)
 			return
 		}
 
 		accessTokenClaims, err := securityManager.ExtractAccessTokenClaims(token)
 		if err != nil {
-			responder.AbortWithError(c, httpError.ErrInvalidCredentials)
+			responder.AbortWithError(c, securityError.ErrTokenInvalid)
 			return
 		}
 
