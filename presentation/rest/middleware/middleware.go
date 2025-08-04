@@ -75,6 +75,8 @@ func SetupMiddleware(
 		router.Use(IPBasedRateLimitMiddleware(responder, config.RateLimit))
 	}
 
+	router.Use(RequestSizeMiddleware(responder, config.MaxRequestSize))
+
 	router.Use(RecoveryMiddleware(responder))
 }
 
