@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"github.com/redis/go-redis/v9"
 	"time"
+
+	envConfig "github.com/pdh9523/go-hexarch/shared/common/config"
 )
 
 type RedisConfig struct {
@@ -48,4 +50,13 @@ func (r *RedisClient) GetClient() *redis.Client {
 
 func (r *RedisClient) Close() error {
 	return r.client.Close()
+}
+
+func NewRedisConfig() *RedisConfig {
+	return &RedisConfig{
+		Host:     envConfig.GetEnv("REDIS_HOST", "localhost"),
+		Port:     envConfig.GetEnv("REDIS_PORT", "6379"),
+		Password: envConfig.GetEnv("REDIS_PASSWORD", ""),
+		DB:       envConfig.GetEnvInt("REDIS_DB", 0),
+	}
 }
