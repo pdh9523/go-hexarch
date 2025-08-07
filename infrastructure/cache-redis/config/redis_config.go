@@ -53,6 +53,7 @@ func (r *RedisClient) Close() error {
 }
 
 func NewRedisConfig() *RedisConfig {
+	envConfig.LoadEnv()
 	return &RedisConfig{
 		Host:     envConfig.GetEnv("REDIS_HOST", "localhost"),
 		Port:     envConfig.GetEnv("REDIS_PORT", "6379"),
