@@ -23,6 +23,7 @@ type GormConfig struct {
 }
 
 func NewGormConfig() *GormConfig {
+	envConfig.LoadEnv()
 	return &GormConfig{
 		Host:            envConfig.GetEnv("DB_HOST", "localhost"),
 		Port:            envConfig.GetEnvInt("DB_PORT", 5432),
