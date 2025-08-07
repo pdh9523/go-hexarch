@@ -24,6 +24,7 @@ func (h *UserHandler) GetMyInfo(c *gin.Context) {
 	result, err := h.userUseCase.GetMyInfo(c.Request.Context())
 	if err != nil {
 		h.responder.Error(c, err)
+		return
 	}
 	h.responder.Success(c, result)
 }
@@ -32,12 +33,14 @@ func (h *UserHandler) CheckNicknameAvailability(c *gin.Context) {
 	var req request.CheckNicknameAvailabilityRequest
 	if err := c.ShouldBindQuery(&req); err != nil {
 		h.responder.Error(c, err)
+		return
 	}
 
 	query := mapper.ToCheckNicknameQuery(req)
 	err := h.userUseCase.CheckNicknameAvailability(c.Request.Context(), query)
 	if err != nil {
 		h.responder.Error(c, err)
+		return
 	}
 	h.responder.Success(c, nil)
 }
@@ -46,12 +49,14 @@ func (h *UserHandler) CheckUsernameAvailability(c *gin.Context) {
 	var req request.CheckUsernameAvailabilityRequest
 	if err := c.ShouldBindQuery(&req); err != nil {
 		h.responder.Error(c, err)
+		return
 	}
 
 	query := mapper.ToCheckUsernameQuery(req)
 	err := h.userUseCase.CheckUsernameAvailability(c.Request.Context(), query)
 	if err != nil {
 		h.responder.Error(c, err)
+		return
 	}
 	h.responder.Success(c, nil)
 }
@@ -61,12 +66,14 @@ func (h *UserHandler) SignUp(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&req); err != nil {
 		h.responder.Error(c, err)
+		return
 	}
 
 	command := mapper.ToSignUpCommand(req)
 	result, err := h.userUseCase.SignUp(c.Request.Context(), command)
 	if err != nil {
 		h.responder.Error(c, err)
+		return
 	}
 	res := mapper.ToTokenResponse(result)
 	h.responder.Success(c, res)
@@ -76,12 +83,14 @@ func (h *UserHandler) SignIn(c *gin.Context) {
 	var req request.SignInRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		h.responder.Error(c, err)
+		return
 	}
 
 	command := mapper.ToSignInCommand(req)
 	result, err := h.userUseCase.SignIn(c.Request.Context(), command)
 	if err != nil {
 		h.responder.Error(c, err)
+		return
 	}
 	res := mapper.ToTokenResponse(result)
 	h.responder.Success(c, res)
@@ -90,6 +99,7 @@ func (h *UserHandler) SignIn(c *gin.Context) {
 func (h *UserHandler) SignOut(c *gin.Context) {
 	if err := h.userUseCase.SignOut(c.Request.Context()); err != nil {
 		h.responder.Error(c, err)
+		return
 	}
 	h.responder.Success(c, nil)
 }
@@ -99,12 +109,14 @@ func (h *UserHandler) ChangePassword(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&req); err != nil {
 		h.responder.Error(c, err)
+		return
 	}
 
 	command := mapper.ToChangePasswordCommand(req)
 	err := h.userUseCase.ChangePassword(c.Request.Context(), command)
 	if err != nil {
 		h.responder.Error(c, err)
+		return
 	}
 
 	h.responder.Success(c, nil)
@@ -115,12 +127,14 @@ func (h *UserHandler) ChangeNickname(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&req); err != nil {
 		h.responder.Error(c, err)
+		return
 	}
 
 	command := mapper.ToChangeNicknameCommand(req)
 	err := h.userUseCase.ChangeNickname(c.Request.Context(), command)
 	if err != nil {
 		h.responder.Error(c, err)
+		return
 	}
 
 	h.responder.Success(c, nil)
