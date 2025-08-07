@@ -54,3 +54,11 @@ func ToChangeNicknameCommand(req request.ChangeNicknameRequest) command.ChangeNi
 		Nickname: req.Nickname,
 	}
 }
+
+func ToUserInfoResponse(result *result.UserInfoResult) response.UserInfoResponse {
+	return response.UserInfoResponse{
+		Username: result.Username,
+		Nickname: result.Nickname,
+		Role:     result.Role,
+	}
+}

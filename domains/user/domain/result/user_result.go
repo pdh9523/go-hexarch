@@ -18,11 +18,13 @@ func NewTokenResult(token *jwt.Token) *TokenResult {
 type UserInfoResult struct {
 	Username string
 	Nickname string
+	Role     string
 }
 
 func NewUserInfoResult(user *domain.User) *UserInfoResult {
 	return &UserInfoResult{
 		Username: user.Username,
 		Nickname: user.Nickname,
+		Role:     user.Role.ToString(),
 	}
 }

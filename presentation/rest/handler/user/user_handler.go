@@ -26,7 +26,8 @@ func (h *UserHandler) GetMyInfo(c *gin.Context) {
 		h.responder.Error(c, err)
 		return
 	}
-	h.responder.Success(c, result)
+	res := mapper.ToUserInfoResponse(result)
+	h.responder.Success(c, res)
 }
 
 func (h *UserHandler) CheckNicknameAvailability(c *gin.Context) {
