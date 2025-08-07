@@ -1,6 +1,8 @@
 package error_code
 
 import (
+	"errors"
+	"github.com/go-playground/validator/v10"
 	userError "github.com/pdh9523/go-hexarch/domains/user/domain/error_code"
 	httpError "github.com/pdh9523/go-hexarch/shared/common/error_code"
 	securityError "github.com/pdh9523/go-hexarch/shared/security/error_code"
@@ -186,6 +188,11 @@ var errorMappings = map[error]ErrorMapping{
 }
 
 func GetErrorMapping(err error) ErrorMapping {
+	var validationErrors validator.ValidationErrors
+	if errors.As(err, &validationErrors) {
+		return handleValidationErrors(validationErrors)
+	}
+
 	mapping, exists := errorMappings[err]
 	if !exists {
 		mapping = ErrorMapping{
@@ -194,4 +201,11 @@ func GetErrorMapping(err error) ErrorMapping {
 		}
 	}
 	return mapping
+}
+
+func handleValidationErrors(errs validator.ValidationErrors) ErrorMapping {
+	return ErrorMapping{
+		Code:       "validation_failed",
+		HttpStatus: http.StatusBadRequest,
+	}
 }
