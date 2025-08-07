@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"context"
 	"github.com/gin-gonic/gin"
 	"github.com/pdh9523/go-hexarch/presentation/rest/dto/response"
 	httpError "github.com/pdh9523/go-hexarch/shared/common/error_code"
@@ -32,8 +33,15 @@ func AuthMiddleware(responder *response.Responder, securityManager security.Mana
 			return
 		}
 
+		// Gin context에 설정 (다른 middleware에서 사용 가능)
 		c.Set("user_id", accessTokenClaims.GetUserID())
 		c.Set("role", accessTokenClaims.GetRole())
+
+		// Go context에 설정 (service layer에서 사용)
+		ctx := c.Request.Context()
+		ctx = context.WithValue(ctx, "user_id", accessTokenClaims.GetUserID())
+		ctx = context.WithValue(ctx, "role", accessTokenClaims.GetRole())
+		c.Request = c.Request.WithContext(ctx)
 
 		c.Next()
 	}
@@ -47,8 +55,15 @@ func OptionalAuthMiddleware(securityManager security.Manager) gin.HandlerFunc {
 			if err == nil {
 				accessTokenClaims, err := securityManager.ExtractAccessTokenClaims(token)
 				if err == nil {
+					// Gin context에 설정
 					c.Set("user_id", accessTokenClaims.GetUserID())
 					c.Set("role", accessTokenClaims.GetRole())
+
+					// Go context에 설정
+					ctx := c.Request.Context()
+					ctx = context.WithValue(ctx, "user_id", accessTokenClaims.GetUserID())
+					ctx = context.WithValue(ctx, "role", accessTokenClaims.GetRole())
+					c.Request = c.Request.WithContext(ctx)
 				}
 			}
 		}
