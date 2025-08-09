@@ -44,7 +44,5 @@ func setupAPIRoutes(router *gin.Engine, container container.Container, responder
 func setupDomainRoutes(v1 *gin.RouterGroup, container container.Container, responder *response.Responder, securityManager security.Manager) {
 	userHandler := container.UserHandler()
 
-	SetupUserRoutes(v1, userHandler)
-
 	setupUserRoutesInternal(v1, userHandler, responder, securityManager)
 }

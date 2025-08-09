@@ -11,30 +11,23 @@ import (
 )
 
 func main() {
-	// Load environment variables from .env file
 	envConfig.LoadEnv()
 
-	// Initialize the application container with all dependencies
 	container, err := config.NewContainer()
 	if err != nil {
 		log.Fatalf("Failed to initialize container: %v", err)
 	}
 
-	// Server configuration
 	cfg := config.NewDefaultServerConfig()
 
-	// Security manager
 	securityManager := security.NewManager(securityConfig.DefaultConfig())
 
-	// Setup router with all dependencies
 	r := router.SetupRouter(container, cfg, securityManager)
 
 	log.Printf("Starting server on port %s in %s mode", cfg.Port, cfg.Mode)
 	log.Printf("Available routes:")
 	log.Printf("  GET  /health")
 	log.Printf("  USER DOMAIN:")
-	log.Printf("    GET  /api/v1/user/nickname/check")
-	log.Printf("    POST /api/v1/user/ (signup)")
 	log.Printf("    POST /api/v1/users/signup")
 	log.Printf("    POST /api/v1/users/signin")
 	log.Printf("    GET  /api/v1/users/username/check")

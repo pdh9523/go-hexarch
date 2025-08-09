@@ -8,14 +8,6 @@ import (
 	"github.com/pdh9523/go-hexarch/shared/security"
 )
 
-func SetupUserRoutes(v1 *gin.RouterGroup, userHandler *handler.UserHandler) {
-	users := v1.Group("/user")
-	{
-		users.GET("/nickname/check", userHandler.CheckNicknameAvailability)
-		users.POST("/", userHandler.SignUp) // Create user endpoint
-	}
-}
-
 func setupUserRoutesInternal(rg *gin.RouterGroup, userHandler *handler.UserHandler, responder *response.Responder, securityManager security.Manager) {
 	users := rg.Group("/users")
 	{
