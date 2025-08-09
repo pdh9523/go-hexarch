@@ -62,3 +62,9 @@ func ToUserInfoResponse(result *result.UserInfoResult) response.UserInfoResponse
 		Role:     result.Role,
 	}
 }
+
+func ToRefreshTokenCommand(req request.RefreshTokenRequest) command.RefreshTokenCommand {
+	return command.RefreshTokenCommand{
+		RefreshToken: req.RefreshToken,
+	}
+}

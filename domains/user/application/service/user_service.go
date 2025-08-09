@@ -231,6 +231,31 @@ func (s *UserService) ChangeNickname(
 	return err
 }
 
+func (s *UserService) RefreshToken(
+	ctx context.Context,
+	command command.RefreshTokenCommand,
+) (*result.TokenResult, error) {
+	refreshTokenClaims, err := s.securityManager.ValidateRefreshToken(command.RefreshToken)
+	if err != nil {
+		return nil, err
+	}
+
+	cachedToken, err := s.userCache.GetRefreshToken(ctx, refreshTokenClaims.UserID)
+	if err != nil {
+		return nil, err
+	}
+
+	if cachedToken != command.RefreshToken {
+		return nil, error_code.ErrInvalidCredentials
+	}
+
+	tokens, err := s.securityManager.RefreshTokens(command.RefreshToken)
+	if err != nil {
+		return nil, err
+	}
+	return result.NewTokenResult(tokens), nil
+}
+
 func (s *UserService) isUsernameExists(ctx context.Context, username string) error {
 	exists, err := s.userRepository.ExistsByUsername(ctx, username)
 	if err != nil {

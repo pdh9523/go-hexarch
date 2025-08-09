@@ -15,6 +15,7 @@ func setupUserRoutesInternal(rg *gin.RouterGroup, userHandler *handler.UserHandl
 		users.POST("/signin", userHandler.SignIn)
 		users.GET("/username/check", userHandler.CheckUsernameAvailability)
 		users.GET("/nickname/check", userHandler.CheckNicknameAvailability)
+		users.POST("/refresh", userHandler.RefreshToken)
 
 		authenticated := users.Group("")
 		authenticated.Use(middleware.AuthMiddleware(responder, securityManager))

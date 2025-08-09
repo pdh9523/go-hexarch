@@ -140,3 +140,22 @@ func (h *UserHandler) ChangeNickname(c *gin.Context) {
 
 	h.responder.Success(c, nil)
 }
+
+func (h *UserHandler) RefreshToken(c *gin.Context) {
+	var req request.RefreshTokenRequest
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		h.responder.Error(c, err)
+		return
+	}
+
+	command := mapper.ToRefreshTokenCommand(req)
+	result, err := h.userUseCase.RefreshToken(c.Request.Context(), command)
+	if err != nil {
+		h.responder.Error(c, err)
+		return
+	}
+
+	res := mapper.ToTokenResponse(result)
+	h.responder.Success(c, res)
+}

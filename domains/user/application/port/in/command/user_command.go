@@ -19,3 +19,7 @@ type ChangePasswordCommand struct {
 type ChangeNicknameCommand struct {
 	Nickname string
 }
+
+type RefreshTokenCommand struct {
+	RefreshToken string
+}

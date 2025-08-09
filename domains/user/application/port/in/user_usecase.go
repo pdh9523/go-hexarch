@@ -16,4 +16,5 @@ type UserUseCase interface {
 	SignOut(ctx context.Context) error
 	ChangePassword(ctx context.Context, command command.ChangePasswordCommand) error
 	ChangeNickname(ctx context.Context, command command.ChangeNicknameCommand) error
+	RefreshToken(ctx context.Context, command command.RefreshTokenCommand) (*result.TokenResult, error)
 }

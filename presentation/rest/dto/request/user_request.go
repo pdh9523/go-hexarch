@@ -27,3 +27,7 @@ type ChangePasswordRequest struct {
 type ChangeNicknameRequest struct {
 	Nickname string `form:"nickname" binding:"required,min=2,max=20"`
 }
+
+type RefreshTokenRequest struct {
+	RefreshToken string `json:"refresh_token" binding:"required"`
+}
